@@ -14,5 +14,7 @@ body {
 }
 
 .logo {
-    ;
+    width: 50vw;
+    display: block;
+    margin: 0 auto;
 }
