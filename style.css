@@ -2,3 +2,9 @@ h1 {
   color: hotpink;
   font-size: 3rem;
 }
+
+body {
+  background-image: url("stars.png");
+  background-size: cover;      /* fill the screen, cropping if needed */
+  background-position: center;
+}
