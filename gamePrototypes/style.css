@@ -1,0 +1,19 @@
+.navBar {
+    height: 7vh;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.panel {
+    border: 2vh solid transparent;
+    border-image: url(/button.png) 500 fill / 2vh round;
+} 
+
+.logo {
+    height: 3vh;
+    width: auto;
+    transition: scale 0.5s ease;
+}
+.logo:hover {
+    scale: 1.1;
+}
