@@ -17,8 +17,9 @@ body { padding: 0; margin: 0 }
 
 
 #description {
-    margin-top: 95.5vh;
+    margin-top: 90vh;
+    margin-bottom: 3vh;
     width: 95vw;
-    margin-left: 1.5vw;
+    margin-left: 1.25vw;
     color: white;
 }
