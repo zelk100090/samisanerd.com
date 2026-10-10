@@ -3,12 +3,17 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | built to scale</title>
+    <title>Magnibot</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
+    <link rel="stylesheet" href="/header.css">
+    <link rel="stylesheet" href="/background.css">
+    <link rel="stylesheet" href="/main.css">
   </head>
   <body>
-    <div id="unity-container" class="unity-desktop">
+    <!--# set var="pageTitle" value="Magnibot" -->
+    <!--# include virtual="/header.html" -->
+    <div id="unity-container" class="unity-desktop panel">
       <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
@@ -18,9 +23,7 @@
       </div>
       <div id="unity-warning"> </div>
       <div id="unity-footer">
-        <div id="unity-webgl-logo"></div>
         <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">built to scale</div>
       </div>
     </div>
     <script>
@@ -118,5 +121,24 @@
       document.body.appendChild(script);
 
     </script>
+    <div id="description" class="panel fredoka"><h1>Controls:</h1>
+      Left & Right Arrow Keys or A & D: move<br>
+      Space: Jump<br>
+      Left Alt: Switch Tool<br>
+      Mouse: Control Tool<br>
+      Click: Use Tool<br>
+      Scroll wheel: Change the number in the top left (IDK what it's for)<br><br>
+      <h1>About:</h1>
+      This was going to be a procedurally generated exploration game. 
+      I wanted to capture the feeling of exploring the wilderness. 
+      You would've played as a rover who just landed on a planet. 
+      Who sent you there? What is your goal? You're not sure. 
+      You would have been able to make a bunch of arms or tools to attatch to yourself 
+      that let you do things like, drill, carry items, blast yourself around, see in the dark, etc. 
+      However, you could only carry two arms at a time and would have to swap them out at your base. 
+      The game has many issues, the main one being that players kind of need a goal to really be engaged.
+      Ultimately in order to get good feeling of exploration it would've need so many different biomes, items, blocks, and more.
+      It eventually died due to feature creep and lack of interest from me.
+      </div>
   </body>
 </html>
