@@ -45,11 +45,12 @@ html, body {
 }
 .button:hover {
     scale: 1.1;
-    animation: shake 3s linear infinite;
+    animation: shake 1.5s linear infinite;
 }
 @keyframes shake {
     0%   { rotate: 0deg; }
     25%  { rotate: 5deg; }
+    50%  { rotate: 0deg; }
     75%  { rotate: -5deg; }
     100% { rotate: 0deg; }
 }
@@ -58,6 +59,8 @@ html, body {
     color: white;
     text-decoration: none;
     font-size: min(20cqw, 50cqh);
+    text-align: center;
+    text-box: trim-both cap alphabetic;
 }
 
 .panel {

@@ -6,8 +6,6 @@ body {
   background-image: linear-gradient(90deg, #00ff1577, #0091ff77), url("whooshBg.png");
   background-size: auto 100dvh;
   background-repeat: repeat-x;
-  animation: scrollInfinite 35s linear infinite;
-  background-attachment: fixed;
 }
 @keyframes scrollInfinite {
   0%   { background-position: 0 0, 0 0; }

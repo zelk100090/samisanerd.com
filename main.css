@@ -1,0 +1,23 @@
+.fredoka {
+  font-family: "Fredoka", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.center {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;   /* full screen height */
+}
+
+.panel {
+    border: 2vh solid transparent;
+    border-image: url(/button.png) 500 fill / 2vh round;
+} 
+
+* {
+    margin: 0;
+}

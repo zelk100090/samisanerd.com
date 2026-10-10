@@ -1,7 +1,9 @@
 .navBar {
     height: 7vh;
-    width: 100%;
+    width: 99%;
     box-sizing: border-box;
+    margin: 0.5%;
+    margin-bottom: 3vh;
 }
 
 .panel {
@@ -16,4 +18,13 @@
 }
 .logo:hover {
     scale: 1.1;
+}
+
+.pageTitle {
+    color: white;
+    position: absolute;
+    left: 50%;
+    translate: -50% ;
+    font-size: 4vh;
+    text-box: trim-both cap alphabetic;
 }
