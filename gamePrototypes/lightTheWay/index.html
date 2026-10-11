@@ -3,17 +3,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>RoverGame</title>
+    <title>Unity WebGL Player | Light the way</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
-    <link rel="stylesheet" href="/header.css">
-    <link rel="stylesheet" href="/background.css">
-    <link rel="stylesheet" href="/main.css">
   </head>
   <body>
-    <!--# set var="pageTitle" value="Light the Way" -->
-    <!--# include virtual="/header.html" -->
-    <div id="unity-container" class="unity-desktop panel">
+    <div id="unity-container" class="unity-desktop">
       <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
@@ -22,8 +17,10 @@
         </div>
       </div>
       <div id="unity-warning"> </div>
-      <div id="unity-footer panel">
+      <div id="unity-footer">
+        <div id="unity-webgl-logo"></div>
         <div id="unity-fullscreen-button"></div>
+        <div id="unity-build-title">Light the way</div>
       </div>
     </div>
     <script>
@@ -97,8 +94,8 @@
       } else {
         // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
 
-        canvas.style.width = "75vw";
-        canvas.style.height = "75vh";
+        canvas.style.width = "960px";
+        canvas.style.height = "600px";
       }
 
       loadingBar.style.display = "block";
@@ -121,17 +118,5 @@
       document.body.appendChild(script);
 
     </script>
-    <div id="description" class="panel fredoka"><h1>Controls:</h1>
-      Left & Right Arrow Keys or A & D: move<br>
-      Space: Jump<br>
-      Mouse: Control Camera<br>
-      Scroll wheel: Change Size<br><br>
-      <h1>About:</h1>
-      This was made for the 2024 GMTK Game Jam. 
-      The theme was "Built to Scale" and so I wanted to make a puzzle platformer wher the player coulg grow and shrink. 
-      I don't totally like how the game turned out, specifically the jump has all sorts of issues and the level design is kinda bad.
-      However, the game features one original unique song my friend who also did the music for my newer game, Snatchdeck.
-      That song is by far the best part of this entire game! 
-      </div>
   </body>
 </html>
