@@ -6,11 +6,6 @@
     margin-bottom: 3vh;
 }
 
-.panel {
-    border: 2vh solid transparent;
-    border-image: url(/button.png) 500 fill / 2vh round;
-} 
-
 .logo {
     height: 3vh;
     width: auto;

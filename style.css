@@ -12,24 +12,9 @@ html, body {
     overscroll-behavior: none;
 }
 
-.fredoka {
-  font-family: "Fredoka", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 500;
-  font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
-}
-
 .subheader {
     color: white;
     text-align: center;
-}
-
-.center {
-  display: grid;
-  place-items: center;
-  min-height: 100vh;   /* full screen height */
 }
 
 .button {
@@ -50,8 +35,7 @@ html, body {
 @keyframes shake {
     0%   { rotate: 0deg; }
     25%  { rotate: 5deg; }
-    50%  { rotate: 0deg; }
-    75%  { rotate: -5deg; }
+    75%  { rotate: -5deg;}
     100% { rotate: 0deg; }
 }
 
@@ -61,12 +45,6 @@ html, body {
     font-size: min(20cqw, 50cqh);
     text-align: center;
     text-box: trim-both cap alphabetic;
-}
-
-.panel {
-    border: 2vh solid transparent;
-    border-image: url(button.png) 500 fill / 2vh round;
-
 }
 
 .mainLabel {

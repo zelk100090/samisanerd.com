@@ -10,11 +10,6 @@ html, body {
     box-sizing: border-box;
 }
 
-.panel {
-    border: 2vh solid transparent;
-    border-image: url(/button.png) 500 fill / 2vh round;
-} 
-
 .logo {
     height: 3vh;
     width: auto;
@@ -63,15 +58,6 @@ html, body {
     grid-area: 1 / 1;
 }
 
-.fredoka {
-  font-family: "Fredoka", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 500;
-  font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
-}
-
 .buttonText {
     color: #FFFFFFFF;
     text-decoration: none;
@@ -98,12 +84,6 @@ html, body {
     width: 100%;
     height: 100%;
     opacity: 100%;
-}
-
-.center {
-  display: grid;
-  place-items: center;
-  min-height: 100vh;   /* full screen height */
 }
 
 .disclaimer {
