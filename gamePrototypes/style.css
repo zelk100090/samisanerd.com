@@ -30,6 +30,7 @@ html, body {
     left: 50%;
     top: 50%;
     translate: -50% -45%;
+    width: 80%;
 }
 
 .button {
