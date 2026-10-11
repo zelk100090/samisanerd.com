@@ -3,12 +3,17 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | Light the way</title>
+    <title>Light the Way</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
+    <link rel="stylesheet" href="/header.css">
+    <link rel="stylesheet" href="/background.css">
+    <link rel="stylesheet" href="/main.css">
   </head>
   <body>
-    <div id="unity-container" class="unity-desktop">
+    <!--# set var="pageTitle" value="Light the Way" -->
+    <!--# include virtual="/header.html" -->
+    <div id="unity-container" class="unity-desktop panel">
       <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
@@ -17,10 +22,8 @@
         </div>
       </div>
       <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="unity-webgl-logo"></div>
+      <div id="unity-footer panel">
         <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">Light the way</div>
       </div>
     </div>
     <script>
@@ -94,8 +97,8 @@
       } else {
         // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
 
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
+        canvas.style.width = "75vw";
+        canvas.style.height = "75vh";
       }
 
       loadingBar.style.display = "block";
@@ -118,5 +121,16 @@
       document.body.appendChild(script);
 
     </script>
+  <div id="description" class="panel fredoka">
+      <h1>About:</h1>
+      This was my very second unity project and it shows.
+      I worked on it for a good few months and my intent was to build it out into a full length game.
+      Looking back, there are a lot of issues.
+      The controls feel like you're moving on ice, and the jump is super low.
+      The level design is both boring and confusing.
+      The speedrunning timer mechanic just ends up forcing hte player to take the intended route.
+      The moving platforms in the final level are also just kind of total garbage to use.
+      But at the end of the day i have a lot of nestalgia for Light the Way as it was the first time I really tried to make my own full game.
+      </div>
   </body>
 </html>
