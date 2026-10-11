@@ -3,12 +3,17 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | zodiac attack</title>
+    <title>Zodiac Attack</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
+    <link rel="stylesheet" href="/header.css">
+    <link rel="stylesheet" href="/background.css">
+    <link rel="stylesheet" href="/main.css">
   </head>
   <body>
-    <div id="unity-container" class="unity-desktop">
+    <!--# set var="pageTitle" value="Zodiac Attack" -->
+    <!--# include virtual="/header.html" -->
+    <div id="unity-container" class="unity-desktop panel">
       <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
@@ -17,10 +22,8 @@
         </div>
       </div>
       <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="unity-webgl-logo"></div>
+      <div id="unity-footer panel">
         <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">zodiac attack</div>
       </div>
     </div>
     <script>
@@ -94,8 +97,8 @@
       } else {
         // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
 
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
+        canvas.style.width = "75vw";
+        canvas.style.height = "75vh";
       }
 
       loadingBar.style.display = "block";
@@ -118,5 +121,24 @@
       document.body.appendChild(script);
 
     </script>
+    <div id="description" class="panel fredoka"><h1>Disclaimer:</h1>
+      This project contains AI generated art. 
+      This project was made in 2023 before AI taking the jobs of artists or any of the current drama existed.
+      At the time it was just a fun new technology to mess around with and so I decided to use it to make some placeholder art for this project.
+      As the project never got finished, the only version I have to show contains this Ai generated placeholder art.
+      In an effort to stay true to the original goal of this page in preserving my old unifished projects, I have decided not to remove/replace the Ai art.<br><br>
+      <h1>Controls:</h1>
+      Left & Right Arrow Keys or A & D: move<br>
+      Space: Fire<br>
+      Reload Page: restart after you die<br>
+      Mouse: Control Tool<br>
+      Click: Use Tool<br>
+      Scroll wheel: Change the number in the top left (IDK what it's for)<br><br>
+      <h1>About:</h1>
+      This was my first unity project. 
+      It is extremely basic but it works and it started down a great journey that eventually led me here.
+      I believe this was made as a part of a game jam though I can't remember which one.
+      according to the itch.io page, the story is the following: <br>
+      <i>"The bosses are just evil aliens that use zodiac signs to gain power. But, as time goes on, the zodiac signs start corrupting and combining with the aliens, making it even harder to de-attach them from the alien’s body. It is the player’s job to free the zodiac signs from the aliens. "</i>
   </body>
 </html>
