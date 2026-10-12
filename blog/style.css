@@ -29,14 +29,8 @@ html, body {
     container-type: size;
 }
 .button:hover {
-    scale: 1.1;
-    animation: shake 1.5s linear infinite;
-}
-@keyframes shake {
-    0%   { rotate: 0deg; }
-    25%  { rotate: 5deg; }
-    75%  { rotate: -5deg; }
-    100% { rotate: 0deg; }
+    scale: 1.05;
+    transition: scale 1s ease;
 }
 
 .button > * {
@@ -76,6 +70,7 @@ html, body {
     display: block;
     margin: 0 auto;
     max-height: 10vh;
+    margin-bottom: 3vh;
 }
 
 .disclaimerText {
@@ -84,4 +79,33 @@ html, body {
     text-align: center;
     font-size: 3vh;
     text-box: trim-both cap alphabetic;
+}
+
+.post {
+    margin: 2vh;
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    height: 10vh;
+    width: 50vw;
+    align-items: center;
+    text-decoration: none;
+}
+
+.postTitle {
+    color: white;
+    font-size: 10vh;
+    text-align: left;
+    text-box: trim-both cap alphabetic;
+    white-space: nowrap;
+    margin-right: 5vw;
+}
+
+.postInfo {
+    color: white;
+    font-size: 3vh;
+    text-align: right;
+    text-box: trim-both cap alphabetic;
+    margin-right: 0;
+    margin-left: auto;
 }
