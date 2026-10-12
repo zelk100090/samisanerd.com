@@ -81,6 +81,14 @@
     margin-right: auto;
 }
 
+.infoBox {
+    display: block;
+    width: fit-content;
+    margin: 1vh;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .imgBox {
     display: block;
     width: 90%;
@@ -92,7 +100,6 @@
 p {
     color: white;
     text-decoration: none;
-    text-align: center;
     font-size: 3vh;
     text-box: trim-both cap alphabetic;
     text-align: left;
@@ -104,11 +111,22 @@ h1 {
     text-align: center;
     font-size: 10vh;
     text-box: trim-both cap alphabetic;
+    margin-top: 1vh;
 }
 
-img {
+.image {
     width: 100%;
     height: auto;
     display: block;
     margin: auto;
+}
+
+time {
+    color: white;
+    text-decoration: none;
+    font-size: 2vh;
+    text-box: trim-both cap alphabetic;
+    text-align: center;
+    margin: auto;
+    display: block;
 }
