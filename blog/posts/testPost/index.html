@@ -16,14 +16,24 @@
     <!--# set var="pageTitle" value="Test Post" -->
     <!--# include virtual="/header.html" -->
     
+    <main>
     <article class="h-entry">
-        <a class="titleBox panel u-url" href="samisanerd.com/blog/posts/testPost"><h1 class="p-name">Test Post</h1></a>
-        <div class="infoBox panel"><time class="dt-published Fredoka" datetime="2026-10-11">10/11/26</time></div>
-        <div class="e-content"></div>
-        <div class="textBox panel"><p>This is a post to test if evrything is working!!! These text boxes should dynamically fit everything that i need! Even multiple lines!<br>
-        -or bullet points<br>
-        -like these ones!</p></div>
-        <div class="imgBox panel"><img src="/whooshBg.png" class="image"></div>
+        <a class="titleBox panel u-url" href="https://samisanerd.com/blog/posts/testPost"><h1 class="p-name">Test Post</h1></a>
+        <div class="infoBox panel"><p class="infoText">
+            <time class="dt-published Fredoka" datetime="2026-10-11">10/11/26</time> - 
+            <a class="p-author h-card authorText" href="https://samisanerd.com">Sam N.</a> - 
+            <span class="p-category">Test</span></p>
+        </div>
+        <div class="e-content">
+            <div class="textBox panel"><p class="articleText">This is a post to test if evrything is working!!! These text boxes should dynamically fit everything that i need! Even multiple lines!<br>
+            -or bullet points<br>
+            -like these ones!</p></div>
+            <div class="imgBox panel"><img src="/whooshBg.png" alt="test image" class="image"></div>
+            <div class="textBox panel"><p class="articleText">This is a post to test if evrything is working!!! These text boxes should dynamically fit everything that i need! Even multiple lines!<br>
+            -or bullet points<br>
+            -like these ones!</p></div>
+        </div>
     </article>
+    </main>
 </body>
 </html>
