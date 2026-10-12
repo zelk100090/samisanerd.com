@@ -16,6 +16,7 @@ html, body {
     color: white;
     text-align: center;
     text-decoration: none;
+    margin-top: 1vh;
 }
 
 .button {
