@@ -4,22 +4,6 @@ html, body {
     overscroll-behavior: none;
 }
 
-.navBar {
-    height: 7vh;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.logo {
-    height: 3vh;
-    width: auto;
-    transition: scale 0.5s ease;
-}
-
-.logo:hover {
-    scale: 1.1;
-}
-
 .buttonContainer {
     margin-top: 3vh;
     display: flex;
