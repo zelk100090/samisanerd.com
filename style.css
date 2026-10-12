@@ -28,6 +28,7 @@ html, body {
     text-align: center;
     transition: scale 1s ease;
     container-type: size;
+    text-decoration: none;
 }
 .button:hover {
     scale: 1.1;
