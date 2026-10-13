@@ -75,7 +75,7 @@ html, body {
     width: 75vw;
     display: block;
     margin: 0 auto;
-    max-height: 10vh;
+    max-height: 15vh;
 }
 
 .disclaimerText {
@@ -86,11 +86,25 @@ html, body {
     text-box: trim-both cap alphabetic;
 }
 
+.mobileDisclaimer {
+    width: 70vw;
+    display: flex;
+    margin: 0 auto;
+    justify-content: center;
+    height: fit-content;
+}
+
 @media (max-width: 678px), (max-height: 678px){
     .disclaimer {
         display: none;
     }
     .buttonContainer {
+        display: none;
+    }
+}
+
+@media (min-width: 679px) and (min-height: 679px) {
+    .mobileDisclaimer {
         display: none;
     }
 }
