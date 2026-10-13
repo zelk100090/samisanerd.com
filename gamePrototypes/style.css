@@ -85,3 +85,12 @@ html, body {
     font-size: 3vh;
     text-box: trim-both cap alphabetic;
 }
+
+@media (max-width: 678px), (max-height: 678px){
+    .disclaimer {
+        display: none;
+    }
+    .buttonContainer {
+        display: none;
+    }
+}
