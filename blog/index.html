@@ -15,21 +15,24 @@
 <body>
     <!--# set var="pageTitle" value="Blog" -->
     <!--# include virtual="/header.html" -->
-    
-    <div class="panel disclaimer">
-    <p class="fredoka disclaimerText">Coming Soon! A record of all my projects.</p>
-    </div>
 
     <main class="h-feed">
         <data value="Sam's Blog" class="p-name"></data>
         <div class="h-entry">
-        <a class="panel post button u-url" href="https://samisanerd.com/blog/posts/testPost">
-            <h2 class="postTitle fredoka p-name">Test Post</h2>
-            <div class="fredoka postInfo">
-                <time datetime="2026-10-11" class="dt-published">10/11/26</time>
-                <p class="p-category">Test</p>
-            </div>
-        </a></div>
+            <a class="panel post button u-url desktop" href="https://samisanerd.com/blog/posts/testPost">
+                <h2 class="postTitle fredoka p-name">Test Post</h2>
+                <div class="fredoka postInfo">
+                    <time datetime="2026-10-11" class="dt-published">10/11/26</time>
+                    <p class="p-category">Test</p>
+                </div>
+            </a>
+            <a class="panel postMobile button mobile" href="https://samisanerd.com/blog/posts/testPost">
+                <h2 class="postTitleMobile fredoka">Test Post</h2><br>
+                <div class="fredoka postInfoMobile">
+                    <p><time datetime="2026-10-11">10/11/26</time> - Test</p>
+                </div>
+            </a>
+        </div>
     </main>
 </body>
 </html>

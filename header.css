@@ -6,6 +6,16 @@
     margin-bottom: 3vh;
 }
 
+.navBarMobile {
+    height: 4vh;
+    width: 99%;
+    box-sizing: border-box;
+    margin: 0.5%;
+    margin-bottom: 3vh;
+    display: flex;
+    align-items: center;
+}
+
 .logo {
     height: 3vh;
     width: auto;
@@ -21,5 +31,23 @@
     left: 50%;
     translate: -50% ;
     font-size: 4vh;
+    text-box: trim-both cap alphabetic;
+}
+
+.logoMobile {
+    height: 2vh;
+    width: auto;
+    transition: scale 0.25s ease;
+}
+.logoMobile:hover {
+    scale: 1.1;
+}
+
+.pageTitleMobile {
+    color: white;
+    position: absolute;
+    left: 50%;
+    translate: -50% ;
+    font-size: 2vh;
     text-box: trim-both cap alphabetic;
 }

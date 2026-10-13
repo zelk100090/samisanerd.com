@@ -2,6 +2,7 @@
     width: 50vw;
     min-width: 15vh;
     max-width: 100vw;
+    
     display: block;
     margin: 0 auto;
 }
@@ -68,3 +69,41 @@ html, body {
     gap: 3vw;
 }
 
+@media (orientation: portrait) {
+    .mainLabel {
+        width: 90vw;
+        min-width: 15vh;
+        max-width: 100vw;
+        display: block;
+        margin: 0 auto;
+        margin-top: 3vh;
+        text-decoration: none;
+    }
+
+    .logo {
+        width: 85vw;
+        min-width: 15vh;
+        max-width: 100vw;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .button {
+        width: 60vw;
+        height: 10vh;
+        transition: background-image 0.25s ease;
+        position: relative;
+        display: inline-grid;
+        place-items: center;
+        text-align: center;
+        transition: scale 1s ease;
+        container-type: size;
+        text-decoration: none;
+    }
+    @keyframes shake {
+    0%   { rotate: 0deg; }
+    25%  { rotate: 1deg; }
+    75%  { rotate: -1deg;}
+    100% { rotate: 0deg; }
+}
+}

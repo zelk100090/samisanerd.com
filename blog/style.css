@@ -65,29 +65,13 @@ html, body {
     opacity: 100%;
 }
 
-.disclaimer {
-    width: 75vw;
-    display: block;
-    margin: 0 auto;
-    max-height: 10vh;
-    margin-bottom: 3vh;
-}
-
-.disclaimerText {
-    color: white;
-    text-decoration: none;
-    text-align: center;
-    font-size: 3vh;
-    text-box: trim-both cap alphabetic;
-}
-
 .post {
     margin: 2vh;
     display: flex;
     margin-left: auto;
     margin-right: auto;
     height: 10vh;
-    width: 50vw;
+    width: 70vw;
     align-items: center;
     text-decoration: none;
 }
@@ -98,7 +82,6 @@ html, body {
     text-align: left;
     text-box: trim-both cap alphabetic;
     white-space: nowrap;
-    margin-right: 5vw;
 }
 
 .postInfo {
@@ -108,4 +91,30 @@ html, body {
     text-box: trim-both cap alphabetic;
     margin-right: 0;
     margin-left: auto;
+}
+
+.postTitleMobile {
+    color: white;
+    font-size: 5vh;
+    text-align: center;
+    text-box: trim-both cap alphabetic;
+    white-space: nowrap;
+    margin-bottom: 0;
+}
+
+.postInfoMobile {
+    color: white;
+    font-size: 1.5vh;
+    text-align: center;
+    text-box: trim-both cap alphabetic;
+}
+
+.postMobile {
+    margin: 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: 7vh;
+    width: 90vw;
+    text-decoration: none;
 }

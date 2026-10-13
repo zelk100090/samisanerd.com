@@ -13,11 +13,26 @@
   min-height: 100vh;
 }
 
-.panel {
-    border: round(2vh, 1px) solid transparent;
-    border-image: url(/button.png) 500 fill / 1 stretch;
-}
-
 * {
     margin: 0;
+}
+
+@media (orientation: landscape){
+  .mobile{
+  display: none;
+  }
+  .panel {
+  border: round(2vh, 1px) solid transparent;
+  border-image: url(/button.png) 500 fill / 1 stretch;
+  }
+}
+
+@media (orientation: portrait){
+  .desktop{
+  display: none;
+  }
+  .panel {
+  border: round(1vh, 1px) solid transparent;
+  border-image: url(/button.png) 500 fill / 1 stretch;
+  }
 }
