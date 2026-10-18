@@ -74,6 +74,12 @@ main{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;min-height:0
 #hint{position:absolute;right:10px;bottom:8px;font-size:11.5px;color:var(--muted);pointer-events:none;text-align:right;max-width:55%;background:color-mix(in srgb,var(--panel) 75%,transparent);padding:2px 6px;border-radius:5px}
 #toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:7px 14px;border-radius:8px;font-size:13px;font-weight:500;pointer-events:none;opacity:0;transition:opacity .2s;z-index:3}
 #toast.show{opacity:.94}
+#stage::before,#stage::after{content:"";position:absolute;left:0;right:0;height:0;background:#07090c;z-index:1;pointer-events:none;transition:height .45s ease}
+#stage::before{top:0}#stage::after{bottom:0}
+#stage.cine::before,#stage.cine::after{height:8%}
+#cineTag{position:absolute;left:50%;transform:translateX(-50%);bottom:1.5%;z-index:2;color:#e8ecf2;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;pointer-events:none;opacity:.8;white-space:nowrap}
+#cineBtn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:transparent}
+@media (prefers-reduced-motion: reduce){#stage::before,#stage::after{transition:none}}
 #notesPanel{position:absolute;top:10px;left:10px;width:260px;max-width:calc(100% - 20px);max-height:calc(100% - 60px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;box-sizing:border-box;z-index:3;display:flex;flex-direction:column;gap:6px}
 #notesPanel h3{margin:0;font-family:var(--f-display);font-weight:800;font-size:15px}
 .noteItem{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:1px solid transparent;background:none;border-radius:8px;padding:6px 6px;cursor:pointer;font-size:13px}
@@ -179,6 +185,7 @@ footer{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
     </div>
     <div class="group">
       <button class="btn primary" id="run">Run</button>
+      <button class="btn" id="cineBtn" aria-pressed="false" title="Run with the camera following the ball (Esc stops following)">Cinematic</button>
       <button class="btn" id="step">Step</button>
       <button class="btn" id="reset" disabled>Reset</button>
       <button class="btn" id="pinBtn" hidden title="Save the path the current or last ball took as a path note">Pin path</button>
@@ -220,6 +227,7 @@ footer{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
         <button class="btn sm" id="selDup" title="Ctrl+D">Duplicate</button><button class="btn sm" id="selMirror" title="M">Mirror</button>
         <button class="btn sm" id="selMerge" title="Join selected paths that connect into one path">Merge paths</button><button class="btn sm" id="selDel" title="Delete">Delete</button><button class="btn sm primary" id="selPaste" title="Ctrl+V">Paste</button>
         <button class="btn sm" id="selCancel" aria-label="Clear selection" title="Esc">✕</button></div>
+      <div id="cineTag" hidden>Following the ball · Esc to stop</div>
       <div id="coords">row 0 · col 0</div>
       <div id="hint">Click to place · right-click erases · Select tool: drag a box to select, drag the selection to move it, Ctrl+C / Ctrl+V · Space-drag pans · scroll zooms</div>
       <div id="toast"></div>
@@ -287,6 +295,7 @@ footer{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
       <li><b>Pieces:</b> switch between Simple icons and Classic pieces that look like the physical game's parts.</li>
       <li><b>Sound:</b> in Classic, parts click and clack as balls pass. Use the Sound button to turn it off.</li>
       <li><b>Board:</b> pick a light or dark board, or Auto to match the page. This works with either piece style.</li>
+      <li><b>Cinematic:</b> runs the machine with the camera following the ball, zoomed in, with letterbox bars. Pause and Step still work. Press Esc, press Cinematic again, or pan or zoom yourself to take the camera back.</li>
       <li><b>Run:</b> Enter runs or pauses. Ctrl+Z undoes. Ctrl+S downloads the board as a .tti file.</li>
     </ul>
     <p style="color:var(--muted);font-size:12.5px">Classic piece art comes from Jesse Crossen's public-domain <a href="https://github.com/jessecrossen/ttsim" target="_blank" rel="noopener">Turing Tumble Simulator</a>.</p>
@@ -303,6 +312,7 @@ const $ = id => document.getElementById(id);
 const isBit = p => p && (p.type === 'bit' || p.type === 'gearbit');
 // parts a register can read: bits and gear bits, plus ramps, which hold a fixed 0 (left) or 1 (right)
 const isRegPart = p => isBit(p) || (p && p.type === 'ramp');
+const regBit = p => p && p.d > 0 ? 1 : 0;
 
 const TOOLS = [
   { id: 'pointer', label: 'Select', key: 'v' },
@@ -1146,7 +1156,7 @@ function regValue(g) {
   let v = 0n, bin = '';
   g.keys.forEach((k, i) => {
     const p = parts.get(k);
-    const bit = p && p.d > 0 ? 1 : 0;
+    const bit = regBit(p);
     if (bit) v += 1n << BigInt(i);
     bin = bit + bin;
   });
@@ -1313,6 +1323,7 @@ function sfx(kind, n = 0) {
 }
 
 function finish(msg, warn) {
+  if (cine) { clearTimeout(cineEndTimer); cineEndTimer = setTimeout(() => setCine(false), 1600); }
   mode = 'done';
   setStatus(msg, warn);
   updateUI(); dirty = true;
@@ -1383,6 +1394,7 @@ function step() {
   updateUI(); dirty = true;
 }
 function resetRun() {
+  if (cine) setCine(false);
   if (snapshot) setParts(JSON.parse(snapshot));
   sim = null; snapshot = null; mode = 'edit';
   setStatus('Board reset. Press Run.');
@@ -1845,9 +1857,47 @@ function settle() {
   if (anim.size || kicks.size) dirty = true;
 }
 let last = performance.now();
+/* ---------- cinematic camera ---------- */
+// While on, the camera glides after the ball, zooms in close and looks a little ahead down the board.
+// Any manual pan or zoom hands the camera back to you.
+let cine = false, cineEndTimer = 0;
+function ballWorld() {
+  const b = sim && sim.ball; if (!b) return null;
+  let t = Math.min(1, b.t); const ty = b.kind === 'roll' ? (style === 'classic' ? Math.pow(t, 1.8) : t) : t * t;
+  return { x: b.fc + (b.c - b.fc) * t, y: b.fr + (b.r - b.fr) * ty, falling: b.kind !== 'roll' };
+}
+function setCine(on, why) {
+  cine = on;
+  clearTimeout(cineEndTimer);
+  $('stage').classList.toggle('cine', on);
+  $('cineTag').hidden = !on;
+  $('cineBtn').setAttribute('aria-pressed', String(on));
+  if (!on && why) toast(why);
+}
+function startCine() {
+  if (mode === 'edit') begin();
+  else if (mode === 'done') { resetRun(); begin(); }
+  else if (mode === 'paused') { mode = 'running'; setStatus('Running…'); }
+  if (mode !== 'running' && mode !== 'paused') return;
+  setCine(true);
+  updateUI();
+}
+function cineFollow(dt) {
+  const w = ballWorld();
+  if (!w) return;
+  const target = Math.min(72, Math.max(36, Math.min(W, H) / 9));
+  // follow faster when the ball moves fast, so it never runs off screen at high speed
+  const k = 1 - Math.exp(-dt / Math.max(40, 220 / Math.sqrt(speed)));
+  const kz = 1 - Math.exp(-dt / 600);
+  cam.x += (w.x - cam.x) * k;
+  cam.y += (w.y + (w.falling ? 2.2 : 1.2) - cam.y) * k;
+  cam.s += (target - cam.s) * kz;
+  dirty = true;
+}
 function frame(now) {
   const dt = Math.min(64, now - last); last = now; NOW = now;
   if (mode === 'running') { tick(dt); dirty = true; updateRegValues(); }
+  if (cine && mode !== 'edit') cineFollow(dt);
   settle();
   if (dirty) render();
   requestAnimationFrame(frame);
@@ -2104,6 +2154,7 @@ cv.addEventListener('pointermove', e => {
   }
   if (!gesture) return;
   if (gesture.kind === 'pinch' && pointers.size === 2) {
+    if (cine) setCine(false);
     const [a, b] = [...pointers.values()];
     const d = Math.hypot(a.x - b.x, a.y - b.y), m = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
     cam.x -= (m.x - gesture.m.x) / cam.s; cam.y -= (m.y - gesture.m.y) / cam.s;
@@ -2111,6 +2162,7 @@ cv.addEventListener('pointermove', e => {
     gesture.d = d; gesture.m = m; return;
   }
   if (gesture.kind === 'pan') {
+    if (cine) setCine(false, 'Camera is yours again. Press Cinematic to follow the ball.');
     cam.x -= (pt.x - gesture.last.x) / cam.s; cam.y -= (pt.y - gesture.last.y) / cam.s;
     gesture.last = pt; dirty = true; return;
   }
@@ -2232,6 +2284,7 @@ cv.addEventListener('pointercancel', endPointer);
 cv.addEventListener('pointerleave', () => { lastPt = null; if (!gesture) { hover = null; dirty = true; } });
 cv.addEventListener('wheel', e => {
   e.preventDefault();
+  if (cine) setCine(false, 'Camera is yours again. Press Cinematic to follow the ball.');
   const pt = pos(e);
   if (e.ctrlKey || Math.abs(e.deltaY) >= 40 || e.deltaMode !== 0) zoomAt(pt.x, pt.y, Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)));
   else { cam.x += e.deltaX / cam.s; cam.y += e.deltaY / cam.s; dirty = true; }
@@ -2260,6 +2313,7 @@ window.addEventListener('keydown', e => {
     return;
   }
   if (e.key === 'Escape') {
+    if (cine) { setCine(false); return; }
     if (pasting) { pasting = null; renderSelBar(); dirty = true; return; }
     if (sel.size) { sel.clear(); selChanged(); return; }
     if (pending.length) { pending = []; regsChanged(); dirty = true; }
@@ -2352,6 +2406,7 @@ $('run').onclick = () => {
   updateUI();
 };
 $('step').onclick = step;
+$('cineBtn').onclick = () => cine ? setCine(false) : startCine();
 $('reset').onclick = () => { resetRun(); renderTray(); };
 $('undo').onclick = undo; $('redo').onclick = redo; $('fit').onclick = fit;
 $('speed').oninput = e => { speed = SPEEDS[+e.target.value]; $('speedVal').textContent = speed + '×'; };
