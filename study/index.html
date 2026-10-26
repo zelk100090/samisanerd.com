@@ -1,0 +1,1206 @@
+<title>Zen Learn</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* Layout: one quiet centered column, like a single sheet of washi on stone; the ensō is the only ornament and it measures mastery. */
+:root {
+  --paper: #E7E9E2;
+  --surface: #F2F3EE;
+  --ink: #22251F;
+  --ink-soft: #5D6257;
+  --line: #CBCFC2;
+  --moss: #52664A;
+  --moss-wash: #DAE2D0;
+  --rust: #9A543F;
+  --rust-wash: #EEDCD3;
+  --on-ink: #F2F3EE;
+  --f-display: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
+  --f-body: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+  --r: 12px;
+  --ease: cubic-bezier(.2,.7,.2,1);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #151713; --surface: #1D201B; --ink: #E3E5DC; --ink-soft: #9EA395; --line: #33372F;
+    --moss: #A2B88B; --moss-wash: #263021; --rust: #D9957A; --rust-wash: #38251F; --on-ink: #151713;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #151713; --surface: #1D201B; --ink: #E3E5DC; --ink-soft: #9EA395; --line: #33372F;
+  --moss: #A2B88B; --moss-wash: #263021; --rust: #D9957A; --rust-wash: #38251F; --on-ink: #151713;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--moss); outline-offset: 3px; border-radius: 6px; }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 500; line-height: 1.25; text-wrap: balance; margin: 0; }
+p { margin: 0; }
+.wrap { max-width: 760px; margin: 0 auto; padding-block: 28px 80px; display: flex; flex-direction: column; gap: 32px; }
+
+/* --- top brand bar --- */
+.brand { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.brand-mark { display: flex; align-items: center; gap: 10px; background: none; border: 0; padding: 0; }
+.brand-mark canvas { width: 28px; height: 28px; }
+.brand-mark span { font-family: var(--f-display); font-size: 20px; letter-spacing: .02em; }
+
+.eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); font-weight: 500; }
+.muted { color: var(--ink-soft); }
+
+/* --- buttons --- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 1px solid var(--line); background: transparent; border-radius: 10px;
+  padding: 10px 18px; font-weight: 500; font-size: 15px; transition: background .2s, border-color .2s, transform .1s;
+  text-decoration: none;
+}
+.btn:hover { border-color: var(--ink-soft); }
+.btn:active { transform: translateY(1px); }
+.btn.primary { background: var(--ink); color: var(--on-ink); border-color: var(--ink); }
+.btn.primary:hover { opacity: .9; }
+.btn.danger { color: var(--rust); }
+.btn.danger:hover { border-color: var(--rust); }
+.btn.ghost { border-color: transparent; }
+.btn.ghost:hover { background: var(--surface); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn kbd { font-family: var(--f-body); font-size: 11px; opacity: .65; border: 1px solid currentColor; border-radius: 4px; padding: 0 5px; line-height: 1.5; }
+.icon-btn { width: 40px; height: 40px; display: inline-grid; place-items: center; border-radius: 50%; border: 1px solid transparent; background: none; color: var(--ink-soft); flex: none; }
+.icon-btn:hover { background: var(--surface); color: var(--ink); }
+.icon-btn svg { width: 20px; height: 20px; }
+.icon-btn.on { color: var(--moss); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+/* --- home --- */
+.hero { display: flex; flex-direction: column; gap: 14px; padding-top: 24px; }
+.hero h1 { font-size: clamp(34px, 7vw, 50px); }
+.hero p { max-width: 52ch; color: var(--ink-soft); font-size: 17px; }
+.sets { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.set-card {
+  text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+  padding: 20px; display: flex; flex-direction: column; gap: 14px; min-width: 0; transition: border-color .2s, transform .2s var(--ease);
+}
+.set-card:hover { border-color: var(--ink-soft); transform: translateY(-2px); }
+.set-card canvas { width: 48px; height: 48px; }
+.set-card h3 { font-size: 19px; overflow-wrap: anywhere; }
+.set-card .meta { font-size: 13px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.tag { display: inline-block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--moss); border: 1px solid var(--moss); border-radius: 999px; padding: 0 8px; margin-left: 6px; vertical-align: 2px; }
+.empty { border: 1px dashed var(--line); border-radius: var(--r); padding: 28px; text-align: center; color: var(--ink-soft); }
+
+/* --- set page --- */
+.back { align-self: flex-start; }
+.set-head { display: flex; flex-direction: column; gap: 8px; }
+.set-head h1 { font-size: clamp(30px, 6vw, 42px); overflow-wrap: anywhere; }
+.overview { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; }
+.overview canvas { width: 104px; height: 104px; flex: none; }
+.counts { display: flex; gap: 28px; flex-wrap: wrap; }
+.count { display: flex; flex-direction: column; gap: 2px; }
+.count b { font-family: var(--f-display); font-size: 30px; font-weight: 500; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.count .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.dot.new { border: 1px solid var(--ink-soft); }
+.dot.learning { background: var(--rust); }
+.dot.mastered { background: var(--moss); }
+.terms { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.term-row { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) auto; gap: 18px; padding: 16px 0; border-bottom: 1px solid var(--line); align-items: start; }
+.term-row .t { font-weight: 500; overflow-wrap: anywhere; white-space: pre-wrap; }
+.term-row .d { color: var(--ink-soft); overflow-wrap: anywhere; white-space: pre-wrap; }
+.term-row .side { display: flex; align-items: center; gap: 4px; }
+.term-row .icon-btn { width: 34px; height: 34px; margin-top: -5px; }
+.status { font-size: 12px; white-space: nowrap; color: var(--ink-soft); }
+@media (max-width: 560px) {
+  .term-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .term-row .d { grid-column: 1; grid-row: 2; }
+  .term-row .side { grid-row: 1 / span 2; grid-column: 2; flex-direction: column; }
+}
+.confirm { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 12px 14px; border: 1px solid var(--rust); border-radius: 10px; color: var(--rust); }
+
+/* --- forms --- */
+label.field { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500; }
+.input, textarea.input {
+  width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
+  transition: border-color .2s;
+}
+.input:focus { border-color: var(--moss); outline: none; }
+textarea.input { resize: vertical; min-height: 200px; line-height: 1.5; font-size: 15px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 22px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.panel h2 { font-size: 22px; }
+.steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; color: var(--ink-soft); }
+.steps b { color: var(--ink); font-weight: 500; }
+.seps { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 560px) { .seps { grid-template-columns: 1fr; } }
+fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+legend { font-size: 14px; font-weight: 500; padding: 0; margin-bottom: 8px; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; background: var(--paper); }
+.seg label { position: relative; }
+.seg input { position: absolute; opacity: 0; inset: 0; }
+.seg span { display: block; padding: 6px 12px; border-radius: 7px; font-size: 14px; cursor: pointer; color: var(--ink-soft); }
+.seg input:checked + span { background: var(--surface); color: var(--ink); box-shadow: 0 0 0 1px var(--line); }
+.seg input:focus-visible + span { outline: 2px solid var(--moss); }
+.custom-sep { width: 110px; padding: 6px 10px; }
+.preview { border-top: 1px solid var(--line); max-height: 320px; overflow: auto; }
+.preview .term-row { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); padding: 10px 0; font-size: 14px; }
+.bookmarklet { display: inline-flex; align-items: center; gap: 8px; border: 1px dashed var(--moss); color: var(--moss); padding: 8px 14px; border-radius: 10px; text-decoration: none; font-weight: 500; cursor: grab; }
+details.panel summary { cursor: pointer; font-family: var(--f-display); font-size: 19px; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+details.panel summary::-webkit-details-marker { display: none; }
+details.panel summary::after { content: "+"; color: var(--ink-soft); font-family: var(--f-body); }
+details.panel[open] summary::after { content: "–"; }
+
+/* edit */
+.edit-row { display: grid; grid-template-columns: 28px minmax(0,1fr) minmax(0,1fr) 40px; gap: 10px; align-items: start; }
+.edit-row .n { color: var(--ink-soft); font-size: 13px; padding-top: 12px; font-variant-numeric: tabular-nums; }
+.edit-row textarea.input { min-height: 48px; resize: vertical; }
+@media (max-width: 560px) {
+  .edit-row { grid-template-columns: 24px minmax(0,1fr) 40px; }
+  .edit-row .def { grid-column: 2; grid-row: 2; }
+  .edit-row .icon-btn { grid-column: 3; grid-row: 1; }
+}
+
+/* --- learn --- */
+.learn-top { display: flex; align-items: center; gap: 12px; }
+.learn-title { display: flex; flex-direction: column; min-width: 0; flex: 1; line-height: 1.3; }
+.learn-title .name { font-family: var(--f-display); font-size: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.meter { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.meter canvas { width: 38px; height: 38px; }
+.meter b { color: var(--ink); font-weight: 500; }
+@media (max-width: 480px) { .meter .lbl { display: none; } .learn-top { gap: 6px; } }
+.track { height: 2px; background: var(--line); border-radius: 2px; overflow: hidden; margin-top: -18px; }
+.track span { display: block; height: 100%; background: var(--ink); transition: width .6s var(--ease); }
+.stage { display: flex; flex-direction: column; gap: 28px; animation: rise .45s var(--ease); }
+@keyframes rise { from { opacity: .001; transform: translateY(8px); } }
+.q-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.q-tools { display: flex; gap: 2px; }
+.prompt { font-family: var(--f-display); font-size: clamp(26px, 5vw, 36px); line-height: 1.4; white-space: pre-wrap; overflow-wrap: anywhere; min-height: 2.8em; }
+.prompt.is-long { font-size: clamp(19px, 3.4vw, 24px); line-height: 1.6; }
+.hint { font-size: 14px; color: var(--ink-soft); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 600px) { .options { grid-template-columns: 1fr; } }
+.opt {
+  position: relative; overflow: hidden; text-align: left; display: flex; gap: 14px; align-items: flex-start;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px; min-height: 64px;
+  transition: border-color .2s, background .25s, opacity .3s; white-space: pre-wrap; overflow-wrap: anywhere; min-width: 0;
+}
+.opt:hover:not(:disabled) { border-color: var(--ink-soft); }
+.opt:disabled { cursor: default; }
+.opt .key { flex: none; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; font-size: 12px; color: var(--ink-soft); margin-top: 1px; }
+.opt .txt { min-width: 0; }
+.opt.is-correct { border-color: var(--moss); background: var(--moss-wash); }
+.opt.is-correct .key { border-color: var(--moss); background: var(--moss); color: var(--on-ink); }
+.opt.is-wrong { border-color: var(--rust); background: var(--rust-wash); }
+.opt.is-wrong .key { border-color: var(--rust); background: var(--rust); color: var(--on-ink); }
+.opt.is-dim { opacity: .45; }
+.tf-candidate { border-left: 2px solid var(--line); padding: 4px 0 4px 18px; font-size: 18px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.dontknow { align-self: flex-start; font-size: 14px; color: var(--ink-soft); background: none; border: 0; padding: 4px 0; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--line); }
+.dontknow:hover { color: var(--ink); }
+.write { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 12px; }
+.write .input { font-size: 18px; padding: 16px 18px; }
+.write.is-correct .input { border-color: var(--moss); background: var(--moss-wash); }
+.write.is-wrong .input { border-color: var(--rust); background: var(--rust-wash); text-decoration: line-through; text-decoration-color: var(--rust); }
+.answer-box { border-radius: var(--r); padding: 14px 18px; display: flex; flex-direction: column; gap: 4px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.answer-box.ok { background: var(--moss-wash); }
+.answer-box.ok .eyebrow { color: var(--moss); }
+.answer-box .big { font-size: 18px; font-weight: 500; }
+.reveal { position: relative; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 22px; min-height: 120px; display: grid; place-items: center; text-align: center; font-size: 19px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.reveal.hidden-ans { color: var(--ink-soft); font-size: 15px; cursor: pointer; border-style: dashed; }
+.feedback { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; padding-top: 18px; border-top: 1px solid var(--line); animation: rise .35s var(--ease); }
+.feedback .msg { font-family: var(--f-display); font-size: 20px; }
+.feedback.ok .msg { color: var(--moss); }
+.feedback.bad .msg { color: var(--rust); }
+.ripple { position: absolute; width: 24px; height: 24px; border: 1px solid var(--moss); border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%) scale(0); animation: ripple 1.6s cubic-bezier(.1,.6,.3,1) forwards; }
+@keyframes ripple { 60% { opacity: .7; } to { transform: translate(-50%, -50%) scale(18); opacity: 0; } }
+
+/* checkpoint & done */
+.checkpoint { display: flex; flex-direction: column; gap: 28px; align-items: center; text-align: center; animation: rise .5s var(--ease); }
+.checkpoint canvas { width: 168px; height: 168px; }
+.checkpoint h1 { font-size: clamp(28px, 6vw, 40px); }
+.checkpoint .counts { justify-content: center; }
+.round-list { width: 100%; text-align: left; list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.round-list li { display: grid; grid-template-columns: 22px minmax(0, 2fr) minmax(0, 3fr); gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.round-list .t { font-weight: 500; overflow-wrap: anywhere; }
+.round-list .d { color: var(--ink-soft); overflow-wrap: anywhere; }
+.round-list svg { width: 18px; height: 18px; margin-top: 3px; }
+.round-list .okm { color: var(--moss); }
+.round-list .badm { color: var(--rust); }
+@media (max-width: 560px) { .round-list li { grid-template-columns: 22px minmax(0,1fr); } .round-list .d { grid-column: 2; } }
+
+/* modal */
+.modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.modal-backdrop { position: absolute; inset: 0; background: color-mix(in srgb, var(--paper) 70%, transparent); backdrop-filter: blur(6px); }
+.modal-panel { position: relative; width: min(520px, 100%); max-height: calc(100% - 32px); overflow: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 26px; display: flex; flex-direction: column; gap: 22px; animation: rise .3s var(--ease); }
+.modal-panel h2 { font-size: 24px; }
+.opt-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; font-size: 15px; }
+.opt-row small { display: block; color: var(--ink-soft); font-size: 13px; }
+.switch { position: relative; width: 42px; height: 24px; flex: none; }
+.switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.switch span { position: absolute; inset: 0; border-radius: 999px; background: var(--line); transition: background .2s; pointer-events: none; }
+.switch span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--surface); transition: transform .2s var(--ease); }
+.switch input:checked + span { background: var(--moss); }
+.switch input:checked + span::after { transform: translateX(18px); }
+.switch input:focus-visible + span { outline: 2px solid var(--moss); outline-offset: 2px; }
+.checks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.checks label { display: flex; gap: 8px; align-items: center; font-size: 15px; }
+.checks input { accent-color: var(--moss); width: 16px; height: 16px; }
+select.input { padding: 8px 12px; width: auto; }
+
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--on-ink); padding: 10px 18px; border-radius: 10px; font-size: 14px; z-index: 60; max-width: calc(100% - 32px); animation: rise .3s var(--ease); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  .ripple { display: none; }
+}
+</style>
+
+<div class="wrap" id="view"></div>
+<div class="modal" id="modal" hidden></div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- utilities ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => Math.random().toString(36).slice(2, 10);
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const pick = a => a[Math.floor(Math.random() * a.length)];
+
+const ICON = {
+  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>',
+  speak: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16.5 9a4 4 0 010 6"/></svg>',
+  star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3.8l2.5 5.1 5.6.8-4 4 .9 5.6-5-2.7-5 2.7.9-5.6-4-4 5.6-.8z"/></svg>',
+  starOn: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3.8l2.5 5.1 5.6.8-4 4 .9 5.6-5-2.7-5 2.7.9-5.6-4-4 5.6-.8z"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  cross: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/></svg>',
+};
+
+/* ---------- storage ---------- */
+const STORE_KEY = 'zenlearn.v1';
+const DEFAULT_SETTINGS = {
+  answerWith: 'term',
+  types: { mc: true, tf: true, written: true, flash: false },
+  roundSize: 7, starredOnly: false, lenient: true, retype: false, audio: false, autoAdvance: true,
+};
+
+function exampleSet() {
+  const cards = [
+    ['Wabi-sabi', 'Beauty found in imperfection, impermanence and incompleteness'],
+    ['Ma', 'The meaningful pause or empty space between things'],
+    ['Kintsugi', 'Mending broken pottery with gold lacquer so the break becomes part of its story'],
+    ['Shibui', 'Subtle, unobtrusive beauty that reveals itself slowly'],
+    ['Yūgen', 'A profound, mysterious sense of the beauty of the universe'],
+    ['Mono no aware', 'A gentle sadness at the passing of things'],
+    ['Kanso', 'Simplicity achieved by removing what is not needed'],
+    ['Ensō', 'A circle drawn in a single brushstroke, expressing a moment of mind'],
+    ['Seijaku', 'Stillness and calm found in the midst of activity'],
+    ['Fukinsei', 'Asymmetry that suggests naturalness rather than design'],
+    ['Datsuzoku', 'Freedom from habit and the ordinary'],
+    ['Shizen', 'Naturalness without pretense or artifice'],
+  ].map(([term, def]) => ({ id: uid(), term, def, star: false }));
+  return { id: uid(), title: 'Japanese aesthetics', example: true, created: Date.now(), cards, progress: {}, settings: structuredClone(DEFAULT_SETTINGS), session: null };
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) { const d = JSON.parse(raw); if (d && Array.isArray(d.sets)) return d; }
+  } catch (e) {}
+  return { sets: [exampleSet()] };
+}
+let db = load();
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(db)); } catch (e) {} }
+
+function newSet(title, pairs, source) {
+  const set = {
+    id: uid(), title: title || 'Untitled set', created: Date.now(), source: source || null,
+    cards: pairs.map(([term, def]) => ({ id: uid(), term, def, star: false })),
+    progress: {}, settings: structuredClone(DEFAULT_SETTINGS), session: null,
+  };
+  db.sets.unshift(set); save();
+  return set;
+}
+
+/* ---------- progress model ----------
+   streak 0 = not yet recognised, 1 = familiar (got a recognition question), 2 = mastered (got a recall question).
+   Quizlet-style: a term must be answered correctly twice — first multiple choice, then written. */
+const prog = (set, id) => set.progress[id] || (set.progress[id] = { s: 0, seen: false, miss: 0 });
+function status(set, card) {
+  const p = set.progress[card.id];
+  if (!p || !p.seen) return 'new';
+  return p.s >= 2 ? 'mastered' : 'learning';
+}
+function counts(set, cards = set.cards) {
+  const c = { new: 0, learning: 0, mastered: 0, total: cards.length };
+  cards.forEach(card => c[status(set, card)]++);
+  return c;
+}
+function activeCards(set) {
+  if (set.settings.starredOnly) { const s = set.cards.filter(c => c.star); if (s.length) return s; }
+  return set.cards;
+}
+const cardById = (set, id) => set.cards.find(c => c.id === id);
+
+/* ---------- answer checking ---------- */
+const norm = s => String(s).normalize('NFKC').toLowerCase().replace(/\([^)]*\)/g, ' ').replace(/[^\p{L}\p{N}\s]/gu, ' ').replace(/\s+/g, ' ').trim();
+const plain = s => s.normalize('NFD').replace(/\p{M}/gu, '');
+function lev(a, b) {
+  if (a === b) return 0;
+  const m = a.length, n = b.length; if (!m) return n; if (!n) return m;
+  let prev = Array.from({ length: n + 1 }, (_, i) => i), cur = new Array(n + 1);
+  for (let i = 1; i <= m; i++) {
+    cur[0] = i;
+    for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    [prev, cur] = [cur, prev];
+  }
+  return prev[n];
+}
+function checkWritten(input, answer, lenient) {
+  const a = norm(input);
+  if (!a) return { ok: false };
+  let cands = [answer, ...String(answer).split(/[\/;,\n]| or /i)].map(norm).filter(Boolean);
+  if (!cands.length) cands = [String(answer).toLowerCase().trim()];
+  if (cands.includes(a)) return { ok: true };
+  if (lenient) {
+    const pa = plain(a);
+    for (const c of cands) {
+      const pc = plain(c);
+      if (pa === pc) return { ok: true, close: true };
+      const tol = pc.length < 4 ? 0 : pc.length < 8 ? 1 : pc.length < 16 ? 2 : 3;
+      if (lev(pa, pc) <= tol) return { ok: true, close: true };
+    }
+  }
+  return { ok: false };
+}
+
+/* ---------- learn engine ---------- */
+function startRound(set) {
+  const pool = activeCards(set).filter(c => status(set, c) !== 'mastered');
+  const prevRound = set.session ? set.session.round : 0;
+  if (!pool.length) { set.session = { round: prevRound, queue: [], roundIds: [], results: {}, total: 0, done: true }; save(); return false; }
+  const learning = shuffle(pool.filter(c => status(set, c) === 'learning'));
+  const fresh = pool.filter(c => status(set, c) === 'new');
+  const ids = shuffle([...learning, ...fresh].slice(0, set.settings.roundSize).map(c => c.id));
+  set.session = { round: prevRound + 1, queue: ids.slice(), roundIds: ids, results: {}, requeued: {}, total: ids.length, done: false };
+  save();
+  return true;
+}
+
+function makeQuestion(set, card) {
+  const st = set.settings, p = prog(set, card.id);
+  const dir = st.answerWith === 'both' ? (Math.random() < .5 ? 'term' : 'def') : st.answerWith;
+  const prompt = dir === 'term' ? card.def : card.term;
+  const answer = dir === 'term' ? card.term : card.def;
+  const answerOf = c => dir === 'term' ? c.term : c.def;
+
+  const seenNorm = new Set([norm(answer)]);
+  const distractors = [];
+  for (const c of shuffle(set.cards)) {
+    if (c.id === card.id) continue;
+    const a = answerOf(c), k = norm(a);
+    if (!k || seenNorm.has(k)) continue;
+    seenNorm.add(k); distractors.push(a);
+    if (distractors.length >= 3) break;
+  }
+
+  const recog = [];
+  if (st.types.mc && distractors.length) recog.push('mc', 'mc', 'mc');
+  if (st.types.tf && distractors.length) recog.push('tf');
+  if (st.types.flash) recog.push('flash');
+  let kind;
+  if (p.s >= 1 && st.types.written) kind = 'written';
+  else if (recog.length) kind = pick(recog);
+  else if (st.types.written) kind = 'written';
+  else kind = 'flash';
+
+  const q = { cardId: card.id, dir, prompt, answer, kind, done: false };
+  if (kind === 'mc') {
+    q.options = shuffle([answer, ...distractors]);
+    q.correctIdx = q.options.indexOf(answer);
+  } else if (kind === 'tf') {
+    q.truth = Math.random() < .5;
+    q.candidate = q.truth ? answer : pick(distractors);
+  }
+  return q;
+}
+
+/* grade and move the queue; returns an undo record for "I was right" overrides */
+function grade(set, q, correct) {
+  const sess = set.session, p = prog(set, q.cardId);
+  const undo = { p: { ...p }, requeued: false };
+  p.seen = true;
+  if (correct) p.s = Math.min(2, p.s + 1);
+  else { p.miss++; p.s = (q.kind === 'written' && p.s >= 1) ? 1 : 0; }
+  (sess.results[q.cardId] ||= []).push(correct);
+  if (sess.queue[0] === q.cardId) sess.queue.shift();
+  if (!correct && !sess.requeued[q.cardId]) {
+    sess.requeued[q.cardId] = true; sess.queue.push(q.cardId); sess.total++; undo.requeued = true;
+  }
+  save();
+  return undo;
+}
+function overrideCorrect(set, q) {
+  const sess = set.session, u = q.undo;
+  set.progress[q.cardId] = { ...u.p };
+  if (u.requeued) {
+    const i = sess.queue.lastIndexOf(q.cardId);
+    if (i >= 0) sess.queue.splice(i, 1);
+    sess.total--; delete sess.requeued[q.cardId];
+  }
+  sess.results[q.cardId].pop();
+  q.undo = grade(set, q, true);
+  q.correct = true; q.overridden = true;
+}
+
+/* ---------- ensō ---------- */
+function drawEnso(cv) {
+  const frac = Math.max(0, Math.min(1, parseFloat(cv.dataset.enso) || 0));
+  const S = cv.clientWidth || parseFloat(cv.getAttribute('width')) || 48;
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = S * dpr; cv.height = S * dpr;
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, S, S);
+  const css = getComputedStyle(document.documentElement);
+  const ink = css.getPropertyValue('--ink').trim() || '#222';
+  const line = css.getPropertyValue('--line').trim() || '#ccc';
+  const weight = S * (S < 60 ? .1 : .075);
+  const cx = S / 2, cy = S / 2, R = S / 2 - weight * .9;
+
+  ctx.strokeStyle = line; ctx.lineWidth = Math.max(1, S / 80);
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.stroke();
+  if (frac <= 0) return;
+
+  // seeded noise so each ensō looks hand-drawn but stays stable between redraws
+  let seed = 7;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const start = -Math.PI * .62;
+  const sweep = Math.PI * 2 * .93 * frac;
+  const steps = Math.max(40, Math.floor(sweep * R * 1.4));
+  ctx.fillStyle = ink;
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const a = start + sweep * t;
+    const r = R + Math.sin(t * 7 + 1.1) * weight * .14 + Math.sin(t * 19) * weight * .05;
+    const swell = Math.sin(Math.min(1, t * 5 + .2) * Math.PI / 2);
+    const w = weight * (.5 + .55 * swell) * (1 - .62 * Math.pow(t, 1.5));
+    ctx.globalAlpha = .82 + rnd() * .14;
+    ctx.beginPath(); ctx.arc(cx + Math.cos(a) * r, cy + Math.sin(a) * r, w / 2, 0, Math.PI * 2); ctx.fill();
+  }
+  // dry-brush bristles along the tail
+  ctx.globalAlpha = .35; ctx.lineCap = 'round';
+  for (let k = 0; k < 5; k++) {
+    const off = (rnd() - .5) * weight * .7;
+    const t0 = .55 + rnd() * .2;
+    ctx.lineWidth = Math.max(.6, weight * .06);
+    ctx.strokeStyle = ink;
+    ctx.beginPath();
+    for (let i = 0; i <= 30; i++) {
+      const t = t0 + (1.02 - t0) * (i / 30);
+      const a = start + sweep * Math.min(1.015, t);
+      const r = R + off * (1 - t * .6) + Math.sin(t * 7 + 1.1) * weight * .14;
+      const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+const redrawEnsos = () => $$('canvas[data-enso]').forEach(drawEnso);
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', redrawEnsos);
+new MutationObserver(redrawEnsos).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+window.addEventListener('resize', () => { clearTimeout(redrawEnsos.t); redrawEnsos.t = setTimeout(redrawEnsos, 120); });
+
+/* ---------- ui state ---------- */
+const ui = { view: 'home', setId: null, q: null, phase: 'ask', lockUntil: 0, confirm: null, timer: null, importDraft: null };
+const view = $('#view');
+const curSet = () => db.sets.find(s => s.id === ui.setId);
+
+function go(v, setId) {
+  clearTimeout(ui.timer);
+  ui.view = v; ui.confirm = null;
+  if (setId !== undefined) ui.setId = setId;
+  if ((v === 'set' || v === 'learn' || v === 'edit') && !curSet()) ui.view = 'home';
+  render();
+  window.scrollTo(0, 0);
+}
+
+let toastT;
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.hidden = false;
+  clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 2600);
+}
+
+function speak(text) {
+  try {
+    if (!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text); u.rate = .95;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+async function copyText(text, msg) {
+  try { await navigator.clipboard.writeText(text); toast(msg); }
+  catch (e) {
+    const ta = document.createElement('textarea'); ta.value = text; ta.className = 'input'; ta.style.minHeight = '140px';
+    ta.readOnly = true;
+    const m = $('#modal');
+    m.innerHTML = `<div class="modal-backdrop" data-act="closeModal"></div><div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="ctitle"><h2 id="ctitle">Copy this text</h2><p class="muted">Your browser blocked automatic copying. The text is selected below; press Ctrl+C or ⌘C.</p></div>`;
+    $('.modal-panel', m).appendChild(ta);
+    $('.modal-panel', m).insertAdjacentHTML('beforeend', '<div class="row"><button class="btn primary" data-act="closeModal">Done</button></div>');
+    m.hidden = false; ta.focus(); ta.select();
+  }
+}
+
+/* ---------- render ---------- */
+function render() {
+  const r = { home: renderHome, import: renderImport, set: renderSet, edit: renderEdit, learn: renderLearn, checkpoint: renderCheckpoint, done: renderDone }[ui.view] || renderHome;
+  view.innerHTML = r();
+  redrawEnsos();
+  afterRender();
+}
+
+const brand = (right = '') => `<div class="brand"><button class="brand-mark" data-act="home" aria-label="Zen Learn home"><canvas data-enso="1" width="28" height="28"></canvas><span>Zen Learn</span></button>${right}</div>`;
+
+function renderHome() {
+  const cards = db.sets.map(s => {
+    const c = counts(s);
+    return `<button class="set-card" data-act="open" data-id="${s.id}">
+      <canvas data-enso="${c.total ? c.mastered / c.total : 0}" width="48" height="48" aria-hidden="true"></canvas>
+      <div><h3>${esc(s.title)}${s.example ? '<span class="tag">Example</span>' : ''}</h3>
+      <p class="meta">${c.total} terms · ${c.mastered} mastered</p></div></button>`;
+  }).join('');
+  return `${brand('<button class="btn primary" data-act="import">Import set</button>')}
+  <section class="hero">
+    <span class="eyebrow">Learn mode, unhurried</span>
+    <h1>One term at a time.</h1>
+    <p>Bring a set over from Quizlet and study it the way Learn does: multiple choice first, then writing it from memory, round after round until every term is mastered.</p>
+  </section>
+  <section style="display:flex;flex-direction:column;gap:14px">
+    <div class="row" style="justify-content:space-between"><h2 style="font-size:22px">Your sets</h2></div>
+    ${db.sets.length ? `<div class="sets">${cards}</div>` : `<div class="empty">No sets yet. Import one from Quizlet to begin.</div>`}
+  </section>`;
+}
+
+/* ---------- import ---------- */
+function bookmarkletSource() {
+  /* runs on a quizlet.com set page; copies the set as JSON that the importer recognises */
+  function zenLearnGrab() {
+    var out = [], seen = {};
+    function sideText(s) { if (!s) return ''; var m = s.media || []; for (var i = 0; i < m.length; i++) { if (typeof m[i].plainText === 'string') return m[i].plainText; } return typeof s.text === 'string' ? s.text : ''; }
+    function add(t, d, id) { t = String(t || '').trim(); d = String(d || '').trim(); if (!t && !d) return; var k = id != null ? 'i' + id : t + '|' + d; if (seen[k]) return; seen[k] = 1; out.push([t, d]); }
+    function walk(o, depth, mode) {
+      if (depth > 60 || o == null) return;
+      if (typeof o === 'string') { var c = o.charAt(0); if (o.length > 40 && (c === '{' || c === '[')) { try { walk(JSON.parse(o), depth + 1, mode); } catch (e) {} } return; }
+      if (typeof o !== 'object') return;
+      if (Array.isArray(o)) { for (var i = 0; i < o.length; i++) walk(o[i], depth + 1, mode); return; }
+      if (mode === 1 && Array.isArray(o.cardSides) && o.cardSides.length >= 2) {
+        var w = null, d = null;
+        o.cardSides.forEach(function (s) { if (s && s.label === 'word') w = s; else if (s && s.label === 'definition') d = s; });
+        add(sideText(w || o.cardSides[0]), sideText(d || o.cardSides[1]), o.id); return;
+      }
+      if (mode === 2 && typeof o.word === 'string' && typeof o.definition === 'string') { add(o.word, o.definition, o.id); return; }
+      for (var k in o) { if (Object.prototype.hasOwnProperty.call(o, k)) walk(o[k], depth + 1, mode); }
+    }
+    var roots = [];
+    try { var nd = document.getElementById('__NEXT_DATA__'); if (nd) roots.push(JSON.parse(nd.textContent)); } catch (e) {}
+    try { if (window.Quizlet) roots.push(window.Quizlet); } catch (e) {}
+    roots.forEach(function (r) { walk(r, 0, 1); });
+    if (!out.length) roots.forEach(function (r) { walk(r, 0, 2); });
+    if (!out.length) {
+      var tt = document.querySelectorAll('.TermText, [class*="SetPageTerm-wordText"], [class*="SetPageTerm-definitionText"]');
+      for (var i = 0; i + 1 < tt.length; i += 2) add(tt[i].innerText, tt[i + 1].innerText);
+    }
+    if (!out.length) { alert('Zen Learn: no terms found. Open a Quizlet set page (quizlet.com/…) and try again.'); return; }
+    var h = document.querySelector('h1');
+    var title = ((h && h.innerText) || document.title || '').replace(/\s*\|\s*Quizlet.*$/i, '').trim();
+    var payload = JSON.stringify({ zenlearn: 1, title: title, source: location.href, cards: out });
+    function done() { alert('Zen Learn: copied ' + out.length + ' terms. Paste them into the Import box.'); }
+    function fallback() {
+      var ta = document.createElement('textarea'); ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+      ta.remove();
+      if (ok) done(); else window.prompt('Zen Learn: copy this text, then paste it into the Import box.', payload);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(payload).then(done, fallback); else fallback();
+  }
+  return 'javascript:' + encodeURIComponent('(' + zenLearnGrab.toString() + ')()');
+}
+
+const SEPS = {
+  term: { tab: '\t', comma: ',', dash: ' - ' },
+  row: { newline: '\n', semicolon: ';' },
+};
+function parseImport(text, d) {
+  const t = text.trim();
+  if (t.startsWith('{') && t.includes('"zenlearn"')) {
+    try {
+      const j = JSON.parse(t);
+      if (Array.isArray(j.cards)) return { json: true, title: j.title || '', source: j.source || '', pairs: j.cards.map(c => [String(c[0] ?? ''), String(c[1] ?? '')]).filter(p => p[0] || p[1]) };
+    } catch (e) {}
+  }
+  const ts = d.termSep === 'custom' ? (d.termCustom || '\t') : SEPS.term[d.termSep];
+  const rs = d.rowSep === 'custom' ? (d.rowCustom || '\n') : SEPS.row[d.rowSep];
+  const rows = rs === '\n' ? text.split(/\r?\n/) : text.split(rs);
+  const pairs = [];
+  for (const row of rows) {
+    if (!row.trim()) continue;
+    const i = row.indexOf(ts);
+    if (i < 0) pairs.push([row.trim(), '']);
+    else pairs.push([row.slice(0, i).trim(), row.slice(i + ts.length).trim()]);
+  }
+  return { json: false, pairs };
+}
+function guessSeps(text, d) {
+  if (text.includes('\t')) d.termSep = 'tab';
+  else {
+    const lines = text.split(/\r?\n/).filter(l => l.trim());
+    if (lines.length && lines.every(l => l.includes(' - '))) d.termSep = 'dash';
+    else if (lines.length && lines.every(l => l.includes(','))) d.termSep = 'comma';
+  }
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  if (lines.length <= 1 && (text.match(/;/g) || []).length > 1) d.rowSep = 'semicolon';
+}
+
+function renderImport() {
+  const d = ui.importDraft ||= { title: '', text: '', termSep: 'tab', rowSep: 'newline', termCustom: '', rowCustom: '' };
+  const radio = (name, val, label, cur) => `<label><input type="radio" name="${name}" value="${val}" ${cur === val ? 'checked' : ''}><span>${label}</span></label>`;
+  return `${brand()}
+  <button class="btn ghost back" data-act="home">${ICON.back.replace('<svg', '<svg width="16" height="16"')} All sets</button>
+  <div class="set-head"><span class="eyebrow">New set</span><h1>Import from Quizlet</h1></div>
+
+  <section class="panel">
+    <h2>Copy your set out of Quizlet</h2>
+    <ol class="steps">
+      <li>Open the set on quizlet.com and click the <b>⋯</b> menu next to the set title.</li>
+      <li>Choose <b>Export</b>. Keep the defaults: <b>Tab</b> between term and definition, <b>New line</b> between rows.</li>
+      <li>Click <b>Copy text</b>, then paste it into the box below.</li>
+    </ol>
+  </section>
+
+  <details class="panel" id="bm-panel">
+    <summary>No Export option? Use the bookmarklet</summary>
+    <p class="muted">Some sets have export turned off. Drag this button to your bookmarks bar, open the Quizlet set, then click the bookmark. It copies the set to your clipboard so you can paste it below.</p>
+    <div class="row">
+      <a class="bookmarklet" id="bm" href="#" draggable="true" title="Drag to your bookmarks bar">Zen Learn ⇢ grab set</a>
+      <button class="btn" data-act="copyBm">Copy bookmarklet code</button>
+    </div>
+    <p class="muted" style="font-size:14px">If dragging doesn't work, copy the code, create a new bookmark, and paste the code as its URL. Quizlet changes its pages from time to time, so check the preview before creating the set.</p>
+  </details>
+
+  <section class="panel">
+    <label class="field" for="imp-title">Set title
+      <input class="input" id="imp-title" placeholder="e.g. Biology chapter 4" value="${esc(d.title)}"></label>
+    <label class="field" for="imp-text">Paste your set
+      <textarea class="input" id="imp-text" spellcheck="false" placeholder="mitochondria&#9;the powerhouse of the cell&#10;ribosome&#9;where proteins are made">${esc(d.text)}</textarea></label>
+    <div class="row"><label class="btn" for="imp-file" style="cursor:pointer">Or open a .txt / .csv file</label><input type="file" id="imp-file" accept=".txt,.csv,.tsv,text/plain" class="sr"></div>
+    <div class="seps" id="seps">
+      <fieldset><legend>Between term and definition</legend>
+        <div class="seg">${radio('termSep', 'tab', 'Tab', d.termSep)}${radio('termSep', 'comma', 'Comma', d.termSep)}${radio('termSep', 'dash', 'Dash', d.termSep)}${radio('termSep', 'custom', 'Custom', d.termSep)}</div>
+        <input class="input custom-sep" id="imp-termc" placeholder="e.g. ::" value="${esc(d.termCustom)}" ${d.termSep === 'custom' ? '' : 'hidden'} aria-label="Custom term separator">
+      </fieldset>
+      <fieldset><legend>Between rows</legend>
+        <div class="seg">${radio('rowSep', 'newline', 'New line', d.rowSep)}${radio('rowSep', 'semicolon', 'Semicolon', d.rowSep)}${radio('rowSep', 'custom', 'Custom', d.rowSep)}</div>
+        <input class="input custom-sep" id="imp-rowc" placeholder="e.g. ##" value="${esc(d.rowCustom)}" ${d.rowSep === 'custom' ? '' : 'hidden'} aria-label="Custom row separator">
+      </fieldset>
+    </div>
+    <div id="imp-preview"></div>
+  </section>`;
+}
+function updateImportPreview() {
+  const d = ui.importDraft, box = $('#imp-preview');
+  if (!box) return;
+  const res = parseImport(d.text, d);
+  $('#seps').hidden = res.json;
+  if (res.json && !d.title && res.title) { d.title = res.title; $('#imp-title').value = res.title; }
+  const n = res.pairs.length, missing = res.pairs.filter(p => !p[0] || !p[1]).length;
+  if (!d.text.trim()) { box.innerHTML = '<p class="muted" style="font-size:14px">A preview of your terms appears here.</p>'; return; }
+  box.innerHTML = `<div class="row" style="justify-content:space-between;margin-bottom:10px">
+      <p><b>${n}</b> ${n === 1 ? 'term' : 'terms'} found${res.json ? ' from the bookmarklet' : ''}${missing ? ` <span class="muted">· ${missing} missing a side</span>` : ''}</p>
+      <button class="btn primary" data-act="createSet" ${n ? '' : 'disabled'}>Create set</button></div>
+    <div class="preview">${res.pairs.slice(0, 200).map(p => `<div class="term-row"><span class="t">${esc(p[0]) || '<span class="muted">(empty)</span>'}</span><span class="d">${esc(p[1]) || '<span class="muted">(empty)</span>'}</span></div>`).join('')}
+    ${n > 200 ? `<p class="muted" style="padding:10px 0;font-size:14px">and ${n - 200} more</p>` : ''}</div>`;
+}
+
+/* ---------- set page ---------- */
+function renderSet() {
+  const set = curSet(), c = counts(set), sess = set.session;
+  const inProgress = sess && !sess.done && sess.queue.length;
+  const anyStudied = c.new < c.total;
+  const statusLabel = { new: 'Not studied', learning: 'Learning', mastered: 'Mastered' };
+  const rows = set.cards.map(card => {
+    const st = status(set, card);
+    return `<li class="term-row"><span class="t">${esc(card.term)}</span><span class="d">${esc(card.def)}</span>
+      <span class="side"><span class="status"><span class="dot ${st}"></span>${statusLabel[st]}</span>
+      <button class="icon-btn ${card.star ? 'on' : ''}" data-act="star" data-id="${card.id}" aria-pressed="${card.star}" aria-label="Star term">${card.star ? ICON.starOn : ICON.star}</button></span></li>`;
+  }).join('');
+  const learnLabel = c.mastered === c.total && c.total ? 'Review results' : inProgress ? `Continue round ${sess.round}` : anyStudied ? 'Continue learning' : 'Start learning';
+  const dangerZone = ui.confirm === 'delete'
+    ? `<div class="confirm">Delete “${esc(set.title)}” and its progress? <button class="btn danger" data-act="deleteSet">Delete</button><button class="btn ghost" data-act="cancelConfirm">Keep it</button></div>`
+    : '';
+  return `${brand()}
+  <button class="btn ghost back" data-act="home">${ICON.back.replace('<svg', '<svg width="16" height="16"')} All sets</button>
+  <div class="set-head">
+    <span class="eyebrow">${set.example ? 'Example set' : 'Set'} · ${c.total} terms</span>
+    <h1>${esc(set.title)}</h1>
+  </div>
+  <div class="row">
+    <button class="btn primary" data-act="learn" ${c.total ? '' : 'disabled'}>${learnLabel}</button>
+    <button class="btn" data-act="settings">Learn options</button>
+    <button class="btn" data-act="edit">Edit</button>
+    <button class="btn" data-act="exportSet">Copy as text</button>
+    <button class="btn ghost danger" data-act="askDelete">Delete</button>
+  </div>
+  ${dangerZone}
+  <div class="overview">
+    <canvas data-enso="${c.total ? c.mastered / c.total : 0}" width="104" height="104" aria-hidden="true"></canvas>
+    <div class="counts">
+      <div class="count"><b>${c.new}</b><span class="muted"><span class="dot new"></span>Not studied</span></div>
+      <div class="count"><b>${c.learning}</b><span class="muted"><span class="dot learning"></span>Learning</span></div>
+      <div class="count"><b>${c.mastered}</b><span class="muted"><span class="dot mastered"></span>Mastered</span></div>
+    </div>
+  </div>
+  <section style="display:flex;flex-direction:column;gap:12px">
+    <h2 style="font-size:22px">Terms in this set</h2>
+    <ul class="terms">${rows || '<li class="empty">This set has no terms. Use Edit to add some.</li>'}</ul>
+  </section>`;
+}
+
+/* ---------- edit ---------- */
+function renderEdit() {
+  const set = curSet();
+  const rows = set.cards.map((c, i) => editRow(c, i)).join('');
+  return `${brand()}
+  <div class="row" style="justify-content:space-between">
+    <button class="btn ghost back" data-act="cancelEdit">${ICON.back.replace('<svg', '<svg width="16" height="16"')} Back without saving</button>
+    <button class="btn primary" data-act="saveEdit">Save changes</button>
+  </div>
+  <label class="field" for="edit-title">Title<input class="input" id="edit-title" value="${esc(set.title)}"></label>
+  <div id="edit-rows" style="display:flex;flex-direction:column;gap:12px">${rows}</div>
+  <div class="row"><button class="btn" data-act="addRow">Add a term</button><button class="btn primary" data-act="saveEdit">Save changes</button></div>`;
+}
+const editRow = (c, i) => `<div class="edit-row" data-id="${c.id || ''}"><span class="n">${i + 1}</span>
+  <textarea class="input term" rows="1" aria-label="Term ${i + 1}" placeholder="Term">${esc(c.term)}</textarea>
+  <textarea class="input def" rows="1" aria-label="Definition ${i + 1}" placeholder="Definition">${esc(c.def)}</textarea>
+  <button class="icon-btn" data-act="delRow" aria-label="Remove term ${i + 1}">${ICON.trash}</button></div>`;
+
+/* ---------- learn ---------- */
+function enterLearn() {
+  const set = curSet();
+  if (!set.session || set.session.done || !set.session.queue.length) {
+    if (!startRound(set)) { go('done'); return; }
+  }
+  nextQuestion();
+}
+function nextQuestion() {
+  const set = curSet(), sess = set.session;
+  clearTimeout(ui.timer);
+  while (sess.queue.length && !cardById(set, sess.queue[0])) sess.queue.shift();
+  if (!sess.queue.length) { ui.view = 'checkpoint'; ui.lockUntil = performance.now() + 400; render(); return; }
+  ui.q = makeQuestion(set, cardById(set, sess.queue[0]));
+  ui.phase = 'ask';
+  ui.view = 'learn';
+  render();
+  if (set.settings.audio) speak(ui.q.prompt);
+}
+
+function renderLearn() {
+  const set = curSet(), sess = set.session, q = ui.q, card = cardById(set, q.cardId);
+  const all = activeCards(set), c = counts(set, all);
+  const answered = sess.total - sess.queue.length - (ui.phase === 'ask' ? 0 : 0);
+  const sideLabel = q.dir === 'term' ? 'Definition' : 'Term';
+  const ansLabel = q.dir === 'term' ? 'term' : 'definition';
+  const fb = ui.phase === 'feedback';
+  let body = '', hint = '';
+
+  if (q.kind === 'mc') {
+    hint = `<span>Choose the matching ${ansLabel}</span><span>Press 1–${q.options.length}</span>`;
+    body = `<div class="options">${q.options.map((o, i) => {
+      let cls = '';
+      if (fb) { if (i === q.correctIdx) cls = 'is-correct'; else if (i === q.picked) cls = 'is-wrong'; else cls = 'is-dim'; }
+      return `<button class="opt ${cls}" data-act="choose" data-i="${i}" ${fb ? 'disabled' : ''}><span class="key">${i + 1}</span><span class="txt">${esc(o)}</span></button>`;
+    }).join('')}</div>${fb ? '' : `<button class="dontknow" data-act="dontKnow">Don't know?</button>`}`;
+  } else if (q.kind === 'tf') {
+    hint = `<span>Is this the right ${ansLabel}?</span><span>Press 1 or 2</span>`;
+    const cls = v => !fb ? '' : (v === q.truth ? 'is-correct' : (v === q.picked ? 'is-wrong' : 'is-dim'));
+    body = `<div class="tf-candidate">${esc(q.candidate)}</div>
+      <div class="options">
+        <button class="opt ${cls(true)}" data-act="tf" data-v="1" ${fb ? 'disabled' : ''}><span class="key">1</span><span class="txt">True</span></button>
+        <button class="opt ${cls(false)}" data-act="tf" data-v="0" ${fb ? 'disabled' : ''}><span class="key">2</span><span class="txt">False</span></button>
+      </div>
+      ${fb && !q.truth ? `<div class="answer-box ok"><span class="eyebrow">Correct ${ansLabel}</span><span class="big">${esc(q.answer)}</span></div>` : ''}
+      ${fb ? '' : `<button class="dontknow" data-act="dontKnow">Don't know?</button>`}`;
+  } else if (q.kind === 'written') {
+    hint = `<span>Type the ${ansLabel}</span><span>Enter to answer</span>`;
+    const state = fb ? (q.correct ? 'is-correct' : 'is-wrong') : '';
+    body = `<form class="write ${state}" id="write-form" autocomplete="off">
+        <input class="input" id="write-in" placeholder="Type the ${ansLabel}" value="${esc(q.typed || '')}" ${fb ? 'readonly' : ''} autocapitalize="off" spellcheck="false" aria-label="Your answer">
+        ${fb ? '' : `<div class="row" style="justify-content:space-between"><button type="button" class="dontknow" data-act="dontKnow">Don't know?</button><button class="btn primary" type="submit">Answer</button></div>`}
+      </form>
+      ${fb && (!q.correct || q.close) ? `<div class="answer-box ok"><span class="eyebrow">Correct ${ansLabel}</span><span class="big">${esc(q.answer)}</span></div>` : ''}
+      ${fb && !q.correct && set.settings.retype ? `<label class="field" for="retype-in">Type the correct answer to continue
+          <input class="input" id="retype-in" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(q.retyped || '')}"></label>` : ''}`;
+  } else {
+    hint = `<span>Recall the ${ansLabel}, then reveal it</span><span>${q.revealed ? 'Press 1 or 2' : 'Space to reveal'}</span>`;
+    body = q.revealed
+      ? `<div class="reveal ${fb && q.correct ? '' : ''}" id="reveal">${esc(q.answer)}</div>
+         ${fb ? '' : `<div class="options">
+           <button class="opt" data-act="self" data-v="0"><span class="key">1</span><span class="txt">Still learning</span></button>
+           <button class="opt" data-act="self" data-v="1"><span class="key">2</span><span class="txt">Got it</span></button></div>`}`
+      : `<button class="reveal hidden-ans" data-act="reveal">Tap to reveal the ${ansLabel}</button>`;
+  }
+
+  let feedback = '';
+  if (fb) {
+    const okMsgs = ['Correct.', 'Well recalled.', 'Yes.', 'Clear and true.'];
+    const msg = q.correct ? (q.overridden ? 'Counted as correct.' : q.close ? 'Correct, with a small slip.' : (q.okMsg ||= pick(okMsgs))) : (q.kind === 'flash' ? 'You’ll see it again soon.' : 'Not yet. Take a breath and note the answer.');
+    const blocked = !q.correct && q.kind === 'written' && set.settings.retype && norm(q.retyped || '') !== norm(q.answer);
+    feedback = `<div class="feedback ${q.correct ? 'ok' : 'bad'}">
+      <p class="msg" aria-live="polite">${msg}</p>
+      <div class="row">
+        ${!q.correct && q.kind === 'written' && q.typed ? `<button class="btn ghost" data-act="override">I was right</button>` : ''}
+        <button class="btn primary" data-act="continue" id="continue-btn" ${blocked ? 'disabled' : ''}>Continue <kbd>Enter</kbd></button>
+      </div></div>`;
+  }
+
+  return `<div class="learn-top">
+      <button class="icon-btn" data-act="exitLearn" aria-label="Back to set">${ICON.back}</button>
+      <div class="learn-title"><span class="eyebrow">Round ${sess.round} · ${Math.min(answered + (fb ? 0 : 1), sess.total)} of ${sess.total}</span><span class="name">${esc(set.title)}</span></div>
+      <div class="meter"><canvas data-enso="${c.total ? c.mastered / c.total : 0}" width="38" height="38" aria-hidden="true"></canvas><span><b>${c.mastered}</b> / ${c.total}<span class="lbl"> mastered</span></span></div>
+      <button class="icon-btn" data-act="settings" aria-label="Learn options">${ICON.gear}</button>
+    </div>
+    <div class="track" aria-hidden="true"><span style="width:${sess.total ? (answered / sess.total) * 100 : 0}%"></span></div>
+    <section class="stage" ${fb ? 'style="animation:none"' : ''}>
+      <div class="q-head"><span class="eyebrow">${sideLabel}</span>
+        <div class="q-tools">
+          <button class="icon-btn" data-act="speak" aria-label="Read aloud">${ICON.speak}</button>
+          <button class="icon-btn ${card.star ? 'on' : ''}" data-act="star" data-id="${card.id}" aria-pressed="${card.star}" aria-label="Star term">${card.star ? ICON.starOn : ICON.star}</button>
+        </div></div>
+      <div class="prompt ${q.prompt.length > 110 ? 'is-long' : ''}">${esc(q.prompt)}</div>
+      <div class="hint">${hint}</div>
+      ${body}
+      ${feedback}
+    </section>`;
+}
+
+function ripple(el) {
+  if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const r = el.getBoundingClientRect();
+  const x = (ui.lastPoint && ui.lastPoint.t > performance.now() - 1500) ? ui.lastPoint.x - r.left : r.width / 2;
+  const y = (ui.lastPoint && ui.lastPoint.t > performance.now() - 1500) ? ui.lastPoint.y - r.top : r.height / 2;
+  for (let i = 0; i < 3; i++) {
+    const s = document.createElement('span'); s.className = 'ripple';
+    s.style.left = Math.max(0, Math.min(r.width, x)) + 'px'; s.style.top = Math.max(0, Math.min(r.height, y)) + 'px';
+    s.style.animationDelay = (i * .22) + 's';
+    el.appendChild(s); setTimeout(() => s.remove(), 2400);
+  }
+}
+
+function answer(correct, extra = {}) {
+  if (ui.phase !== 'ask') return;
+  const set = curSet(), q = ui.q;
+  Object.assign(q, extra);
+  q.correct = correct;
+  q.undo = grade(set, q, correct);
+  ui.phase = 'feedback';
+  ui.lockUntil = performance.now() + 250;
+  render();
+  if (correct) {
+    ripple($('.opt.is-correct') || $('#write-form') || $('#reveal'));
+    if (set.settings.autoAdvance && !q.close) ui.timer = setTimeout(cont, q.kind === 'written' ? 1100 : 900);
+  } else {
+    if (set.settings.audio) speak(q.answer);
+  }
+}
+function cont() {
+  clearTimeout(ui.timer);
+  if (ui.view !== 'learn' || ui.phase !== 'feedback') return;
+  const btn = $('#continue-btn'); if (btn && btn.disabled) { $('#retype-in')?.focus(); return; }
+  nextQuestion();
+}
+
+/* ---------- checkpoint & done ---------- */
+function renderCheckpoint() {
+  const set = curSet(), sess = set.session, c = counts(set, activeCards(set));
+  const items = sess.roundIds.map(id => cardById(set, id)).filter(Boolean).map(card => {
+    const res = sess.results[card.id] || [];
+    const clean = res.length && res[0];
+    return `<li><span class="${clean ? 'okm' : 'badm'}" aria-label="${clean ? 'Correct first time' : 'Missed at least once'}">${clean ? ICON.check : ICON.cross}</span>
+      <span class="t">${esc(card.term)}</span><span class="d">${esc(card.def)}</span></li>`;
+  }).join('');
+  const left = c.total - c.mastered;
+  return `<div class="checkpoint">
+    <canvas data-enso="${c.total ? c.mastered / c.total : 0}" width="168" height="168" aria-hidden="true"></canvas>
+    <span class="eyebrow">Round ${sess.round} complete</span>
+    <h1>${left ? `${c.mastered} of ${c.total} terms mastered` : 'Every term is mastered.'}</h1>
+    <div class="counts">
+      <div class="count"><b>${c.new}</b><span class="muted"><span class="dot new"></span>Not studied</span></div>
+      <div class="count"><b>${c.learning}</b><span class="muted"><span class="dot learning"></span>Learning</span></div>
+      <div class="count"><b>${c.mastered}</b><span class="muted"><span class="dot mastered"></span>Mastered</span></div>
+    </div>
+    <div class="row" style="justify-content:center">
+      <button class="btn primary" data-act="nextRound" id="next-round">${left ? `Continue to round ${sess.round + 1}` : 'Finish'} <kbd>Enter</kbd></button>
+      <button class="btn" data-act="exitLearn">Back to set</button>
+    </div>
+    <ul class="round-list" aria-label="Terms studied this round">${items}</ul>
+  </div>`;
+}
+function renderDone() {
+  const set = curSet(), c = counts(set, activeCards(set));
+  const hardest = activeCards(set).map(card => ({ card, m: (set.progress[card.id] || {}).miss || 0 })).filter(x => x.m).sort((a, b) => b.m - a.m).slice(0, 5);
+  return `<div class="checkpoint">
+    <canvas data-enso="1" width="168" height="168" aria-hidden="true"></canvas>
+    <span class="eyebrow">${esc(set.title)}</span>
+    <h1>All ${c.total} terms mastered.</h1>
+    <p class="muted" style="max-width:46ch">The circle is closed. Start over to study the whole set again, or come back later to see what stayed with you.</p>
+    <div class="row" style="justify-content:center">
+      <button class="btn primary" data-act="restart">Start over</button>
+      <button class="btn" data-act="exitLearn">Back to set</button>
+    </div>
+    ${hardest.length ? `<div style="width:100%;text-align:left;display:flex;flex-direction:column;gap:10px"><span class="eyebrow">Missed most often</span>
+      <ul class="round-list">${hardest.map(x => `<li><span class="badm" style="font-size:13px;font-variant-numeric:tabular-nums">${x.m}×</span><span class="t">${esc(x.card.term)}</span><span class="d">${esc(x.card.def)}</span></li>`).join('')}</ul></div>` : ''}
+  </div>`;
+}
+
+/* ---------- settings modal ---------- */
+function openSettings() {
+  const set = curSet(), s = set.settings, m = $('#modal');
+  const radio = (v, l) => `<label><input type="radio" name="answerWith" value="${v}" ${s.answerWith === v ? 'checked' : ''}><span>${l}</span></label>`;
+  const chk = (k, l) => `<label><input type="checkbox" name="type-${k}" ${s.types[k] ? 'checked' : ''}> ${l}</label>`;
+  const sw = (k, l, sub) => `<div class="opt-row"><label for="opt-${k}">${l}${sub ? `<small>${sub}</small>` : ''}</label><span class="switch"><input type="checkbox" id="opt-${k}" name="${k}" ${s[k] ? 'checked' : ''}><span></span></span></div>`;
+  const starred = set.cards.filter(c => c.star).length;
+  m.innerHTML = `<div class="modal-backdrop" data-act="closeModal"></div>
+  <form class="modal-panel" id="settings-form" role="dialog" aria-modal="true" aria-labelledby="st-title">
+    <div class="row" style="justify-content:space-between"><h2 id="st-title">Learn options</h2><button type="button" class="icon-btn" data-act="closeModal" aria-label="Close">${ICON.cross}</button></div>
+    <fieldset><legend>Answer with</legend><div class="seg">${radio('term', 'Term')}${radio('def', 'Definition')}${radio('both', 'Both')}</div></fieldset>
+    <fieldset><legend>Question types</legend><div class="checks">${chk('mc', 'Multiple choice')}${chk('tf', 'True / false')}${chk('written', 'Written')}${chk('flash', 'Flashcards')}</div>
+      <p class="muted" style="font-size:13px">New terms start with choice questions. Once familiar, they come back as written questions.</p></fieldset>
+    <div class="opt-row"><label for="opt-round">Terms per round</label>
+      <select class="input" id="opt-round" name="roundSize">${[5, 7, 10, 15, 20].map(n => `<option ${s.roundSize === n ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
+    ${sw('starredOnly', 'Study starred terms only', starred ? `${starred} starred` : 'Star terms on the set page or during a question')}
+    ${sw('lenient', 'Forgive small typos', 'Accents and one or two slipped letters still count')}
+    ${sw('retype', 'Retype missed answers', 'Copy the correct answer before moving on')}
+    ${sw('autoAdvance', 'Move on after a correct answer')}
+    ${sw('audio', 'Read prompts aloud', 'Uses your device’s voice')}
+    <div style="border-top:1px solid var(--line);padding-top:18px;display:flex;flex-direction:column;gap:10px">
+      ${ui.confirm === 'reset'
+        ? `<div class="confirm">Reset progress for every term in this set? <button type="button" class="btn danger" data-act="resetProgress">Reset</button><button type="button" class="btn ghost" data-act="cancelReset">Cancel</button></div>`
+        : `<div class="row" style="justify-content:space-between"><span class="muted" style="font-size:14px">Clear what you've mastered and start again.</span><button type="button" class="btn danger" data-act="askReset">Reset progress</button></div>`}
+    </div>
+    <div class="row" style="justify-content:flex-end"><button type="button" class="btn primary" data-act="closeModal">Done</button></div>
+  </form>`;
+  if (m.hidden) { ui.settingsChanged = false; ui.settingsResetSession = false; }
+  m.hidden = false;
+  $('#settings-form').addEventListener('change', e => {
+    const f = e.currentTarget, before = JSON.stringify(s);
+    s.answerWith = f.answerWith.value;
+    const types = { mc: f['type-mc'].checked, tf: f['type-tf'].checked, written: f['type-written'].checked, flash: f['type-flash'].checked };
+    if (!Object.values(types).some(Boolean)) { e.target.checked = true; toast('Keep at least one question type.'); return; }
+    s.types = types;
+    s.roundSize = parseInt(f.roundSize.value, 10);
+    const prevStar = s.starredOnly;
+    ['starredOnly', 'lenient', 'retype', 'autoAdvance', 'audio'].forEach(k => s[k] = f[k].checked);
+    if (s.starredOnly && !starred) toast('No starred terms yet, so the whole set is used.');
+    if (prevStar !== s.starredOnly) { set.session = null; ui.settingsResetSession = true; }
+    if (before !== JSON.stringify(s)) ui.settingsChanged = true;
+    save();
+  });
+  setTimeout(() => $('#settings-form input')?.focus(), 30);
+}
+function closeModal() {
+  const m = $('#modal');
+  const wasSettings = !!$('#settings-form', m);
+  m.hidden = true; m.innerHTML = ''; ui.confirm = null;
+  if (!wasSettings) return;
+  if (ui.view === 'learn' || ui.view === 'checkpoint') {
+    if (ui.settingsResetSession || !curSet().session) enterLearn();
+    else if (ui.view === 'learn' && ui.phase === 'ask' && ui.settingsChanged) nextQuestion();
+  } else if (ui.view === 'set') render();
+}
+
+/* ---------- events ---------- */
+const actions = {
+  home: () => go('home'),
+  import: () => go('import'),
+  open: el => go('set', el.dataset.id),
+  learn: () => { const set = curSet(); ui.view = 'learn'; const c = counts(set, activeCards(set)); if (c.mastered === c.total && (!set.session || set.session.done || !set.session.queue.length)) go('done'); else enterLearn(); },
+  exitLearn: () => { if ('speechSynthesis' in window) speechSynthesis.cancel(); go('set'); },
+  settings: () => openSettings(),
+  closeModal: () => closeModal(),
+  edit: () => go('edit'),
+  cancelEdit: () => go('set'),
+  askDelete: () => { ui.confirm = 'delete'; render(); },
+  cancelConfirm: () => { ui.confirm = null; render(); },
+  deleteSet: () => { db.sets = db.sets.filter(s => s.id !== ui.setId); save(); toast('Set deleted.'); go('home'); },
+  askReset: () => { ui.confirm = 'reset'; openSettings(); },
+  cancelReset: () => { ui.confirm = null; openSettings(); },
+  resetProgress: () => { const set = curSet(); set.progress = {}; set.session = null; save(); ui.confirm = null; ui.settingsResetSession = true; toast('Progress reset.'); closeModal(); ui.settingsResetSession = false; if (ui.view === 'set') render(); else if (ui.view === 'done') go('set'); },
+  restart: () => { const set = curSet(); set.progress = {}; set.session = null; save(); enterLearn(); },
+  exportSet: () => { const set = curSet(); copyText(set.cards.map(c => `${c.term}\t${c.def}`).join('\n'), `Copied ${set.cards.length} terms as tab-separated text.`); },
+  copyBm: () => copyText(bookmarkletSource(), 'Bookmarklet code copied.'),
+  star: el => {
+    const set = curSet(), card = cardById(set, el.dataset.id); if (!card) return;
+    card.star = !card.star; save();
+    el.classList.toggle('on', card.star); el.setAttribute('aria-pressed', card.star); el.innerHTML = card.star ? ICON.starOn : ICON.star;
+  },
+  speak: () => ui.q && speak(ui.q.prompt),
+  choose: el => { const q = ui.q, i = +el.dataset.i; answer(i === q.correctIdx, { picked: i }); },
+  tf: el => { const v = el.dataset.v === '1'; answer(v === ui.q.truth, { picked: v }); },
+  dontKnow: () => { if (ui.q.kind === 'flash') { ui.q.revealed = true; answer(false); } else answer(false, { picked: -1, typed: '' }); },
+  reveal: () => { ui.q.revealed = true; render(); },
+  self: el => answer(el.dataset.v === '1'),
+  override: () => { overrideCorrect(curSet(), ui.q); render(); ripple($('#write-form')); },
+  continue: () => cont(),
+  nextRound: () => { const set = curSet(); if (startRound(set)) nextQuestion(); else go('done'); },
+  createSet: () => {
+    const d = ui.importDraft, res = parseImport(d.text, d);
+    if (!res.pairs.length) return;
+    const title = ($('#imp-title').value || '').trim() || res.title || 'Imported set';
+    const set = newSet(title, res.pairs, res.source);
+    ui.importDraft = null; toast(`Created “${set.title}” with ${set.cards.length} terms.`); go('set', set.id);
+  },
+  addRow: () => {
+    const box = $('#edit-rows'), n = box.children.length;
+    box.insertAdjacentHTML('beforeend', editRow({ term: '', def: '' }, n));
+    box.lastElementChild.querySelector('textarea').focus();
+  },
+  delRow: el => { el.closest('.edit-row').remove(); $$('#edit-rows .edit-row .n').forEach((s, i) => s.textContent = i + 1); },
+  saveEdit: () => {
+    const set = curSet();
+    set.title = $('#edit-title').value.trim() || set.title;
+    const old = new Map(set.cards.map(c => [c.id, c]));
+    set.cards = $$('#edit-rows .edit-row').map(r => {
+      const term = $('.term', r).value.trim(), def = $('.def', r).value.trim();
+      if (!term && !def) return null;
+      const prev = old.get(r.dataset.id);
+      if (prev) {
+        if (prev.term !== term || prev.def !== def) delete set.progress[prev.id];
+        return { ...prev, term, def };
+      }
+      return { id: uid(), term, def, star: false };
+    }).filter(Boolean);
+    const keep = new Set(set.cards.map(c => c.id));
+    Object.keys(set.progress).forEach(id => { if (!keep.has(id)) delete set.progress[id]; });
+    if (set.session) set.session.queue = set.session.queue.filter(id => keep.has(id));
+    save(); toast('Saved.'); go('set');
+  },
+};
+
+document.addEventListener('pointerdown', e => { ui.lastPoint = { x: e.clientX, y: e.clientY, t: performance.now() }; }, true);
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (!el || el.disabled) return;
+  const fn = actions[el.dataset.act];
+  if (fn) { e.preventDefault(); fn(el, e); }
+});
+
+function afterRender() {
+  if (ui.view === 'import') {
+    const d = ui.importDraft;
+    const bm = $('#bm');
+    bm.href = bookmarkletSource();
+    bm.addEventListener('click', e => { e.preventDefault(); toast('Drag this button to your bookmarks bar, then click it on a Quizlet set page.'); });
+    $('#imp-title').addEventListener('input', e => d.title = e.target.value);
+    const ta = $('#imp-text');
+    ta.addEventListener('input', () => { const fresh = !d.text; d.text = ta.value; if (fresh) { guessSeps(d.text, d); syncSepUI(); } updateImportPreview(); });
+    $('#seps').addEventListener('change', e => {
+      if (e.target.name === 'termSep') d.termSep = e.target.value;
+      if (e.target.name === 'rowSep') d.rowSep = e.target.value;
+      syncSepUI(); updateImportPreview();
+    });
+    $('#imp-termc').addEventListener('input', e => { d.termCustom = e.target.value; updateImportPreview(); });
+    $('#imp-rowc').addEventListener('input', e => { d.rowCustom = e.target.value; updateImportPreview(); });
+    $('#imp-file').addEventListener('change', e => {
+      const f = e.target.files[0]; if (!f) return;
+      const r = new FileReader();
+      r.onload = () => {
+        d.text = String(r.result); ta.value = d.text;
+        if (!d.title) { d.title = f.name.replace(/\.[^.]+$/, ''); $('#imp-title').value = d.title; }
+        if (/\.csv$/i.test(f.name) && !d.text.includes('\t')) d.termSep = 'comma'; else guessSeps(d.text, d);
+        syncSepUI(); updateImportPreview();
+      };
+      r.readAsText(f);
+    });
+    updateImportPreview();
+  }
+  if (ui.view === 'learn') {
+    const form = $('#write-form');
+    if (form && ui.phase === 'ask') {
+      const inp = $('#write-in'); inp.focus();
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const val = inp.value;
+        if (!val.trim()) { inp.focus(); return; }
+        const r = checkWritten(val, ui.q.answer, curSet().settings.lenient);
+        answer(r.ok, { typed: val, close: !!r.close });
+      });
+    }
+    const rt = $('#retype-in');
+    if (rt) {
+      rt.focus();
+      rt.addEventListener('input', () => {
+        ui.q.retyped = rt.value;
+        const ok = norm(rt.value) === norm(ui.q.answer);
+        $('#continue-btn').disabled = !ok;
+        rt.style.borderColor = ok ? 'var(--moss)' : '';
+      });
+    }
+    if (ui.phase === 'feedback' && !rt) $('#continue-btn')?.focus({ preventScroll: true });
+  }
+  if (ui.view === 'checkpoint' || ui.view === 'done') $('#next-round, [data-act="restart"]')?.focus({ preventScroll: true });
+}
+function syncSepUI() {
+  const d = ui.importDraft;
+  $$('#seps input[type=radio]').forEach(r => r.checked = (r.name === 'termSep' ? d.termSep : d.rowSep) === r.value);
+  $('#imp-termc').hidden = d.termSep !== 'custom';
+  $('#imp-rowc').hidden = d.rowSep !== 'custom';
+}
+
+document.addEventListener('keydown', e => {
+  if (!$('#modal').hidden) { if (e.key === 'Escape') closeModal(); return; }
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const inField = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
+  if (performance.now() < ui.lockUntil) { if (e.key === 'Enter') e.preventDefault(); return; }
+
+  if (ui.view === 'checkpoint' && e.key === 'Enter') { e.preventDefault(); actions.nextRound(); return; }
+  if (ui.view !== 'learn' || !ui.q) return;
+  const q = ui.q;
+
+  if (ui.phase === 'feedback') {
+    if (e.key === 'Enter' || (e.key === ' ' && !inField)) { e.preventDefault(); cont(); }
+    return;
+  }
+  if (inField) return;
+  const n = parseInt(e.key, 10);
+  if (q.kind === 'mc' && n >= 1 && n <= q.options.length) { actions.choose({ dataset: { i: n - 1 } }); }
+  else if (q.kind === 'tf' && (n === 1 || n === 2 || /^[tf]$/i.test(e.key))) { const v = n ? n === 1 : e.key.toLowerCase() === 't'; answer(v === q.truth, { picked: v }); }
+  else if (q.kind === 'flash') {
+    if (!q.revealed && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); actions.reveal(); }
+    else if (q.revealed && (n === 1 || n === 2)) answer(n === 2);
+  }
+  else if (e.key === '?' || e.key === '0') actions.dontKnow();
+});
+
+render();
+})();
+</script>
