@@ -94,7 +94,7 @@ html, body {
     height: fit-content;
 }
 
-@media (max-width: 678px), (max-height: 678px){
+@media (max-width: 650px), (max-height: 650px){
     .disclaimer {
         display: none;
     }
@@ -103,7 +103,7 @@ html, body {
     }
 }
 
-@media (min-width: 679px) and (min-height: 679px) {
+@media (min-width: 651px) and (min-height: 651px) {
     .mobileDisclaimer {
         display: none;
     }

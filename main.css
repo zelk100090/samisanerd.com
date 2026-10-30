@@ -36,3 +36,7 @@
   border-image: url(/button.png) 500 fill / 1 stretch;
   }
 }
+
+h1 {
+  text-decoration: none;
+}
