@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Drift Lists">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="icon.png">
+<title>Sign in to Drift Lists</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap">
+<style>
+:root {
+  --base: #e8e5ee; --panel: #fdfcff; --soft: #f2f0f7; --fg: #1d1b23; --muted: #6d6979;
+  --line: #e4e1eb; --accent: #8b7cf6; --on-accent: #ffffff; --error: #c23d36;
+  --shadow: 0 1px 2px rgb(30 20 50 / .06), 0 10px 32px rgb(30 20 50 / .10);
+  --font: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --base: #121116; --panel: #1c1b21; --soft: #25242b; --fg: #ecebf1; --muted: #9b97a7; --line: #2d2b34; --error: #f07a72;
+          --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 12px 36px rgb(0 0 0 / .35); color-scheme: dark; }
+}
+html { height: 100%; box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  min-height: 100%; margin: 0; display: grid; place-items: center;
+  padding: max(24px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  font: 15px/1.45 var(--font); color: var(--fg); -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(110% 80% at 0% 0%, color-mix(in oklab, var(--accent) 48%, transparent), transparent 62%),
+    radial-gradient(90% 70% at 100% 100%, color-mix(in oklab, #36a9b2 34%, transparent), transparent 66%),
+    var(--base);
+}
+.card { width: min(380px, 100%); padding: 32px 28px 28px; border-radius: 16px; background: var(--panel); box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 18px; }
+.mark { width: 44px; height: 44px; border-radius: 13px; }
+h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
+p { margin: -10px 0 0; color: var(--muted); font-size: 14px; }
+label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; }
+input[type="password"] { height: 46px; padding: 0 14px; border-radius: 11px; border: 1px solid var(--line); background: var(--soft); color: var(--fg); font: inherit; font-size: 16px; }
+input[type="password"]:focus { outline: none; border-color: var(--accent); background: var(--panel); }
+button { height: 44px; border: 0; border-radius: 11px; background: var(--accent); color: var(--on-accent); font: 500 15px var(--font); cursor: pointer; }
+button:disabled { opacity: .6; cursor: progress; }
+button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+.msg { min-height: 20px; margin: -6px 0; color: var(--error); font-size: 13.5px; }
+</style>
+</head>
+<body>
+  <form class="card" id="form" autocomplete="on">
+    <img class="mark" src="icon.png" alt="">
+    <h1>Drift Lists</h1>
+    <p>Enter your password to open your lists.</p>
+    <input type="text" name="username" autocomplete="username" value="drift" hidden>
+    <label for="password">Password
+      <input type="password" id="password" name="password" autocomplete="current-password" required autofocus>
+    </label>
+    <div class="msg" id="msg" role="alert"></div>
+    <button type="submit" id="submit">Sign in</button>
+  </form>
+  <script src="login.js"></script>
+</body>
+</html>

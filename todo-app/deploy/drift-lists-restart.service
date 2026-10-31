@@ -1,0 +1,9 @@
+# Template: setup-pi.sh installs this. Started by drift-lists-restart.path.
+[Unit]
+Description=Restart Drift Lists after a deploy
+
+[Service]
+Type=oneshot
+# Give the deploy a moment to finish writing every file.
+ExecStartPre=/bin/sleep 3
+ExecStart=/bin/systemctl restart drift-lists.service

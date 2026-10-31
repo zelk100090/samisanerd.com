@@ -1,0 +1,13 @@
+# Template: setup-pi.sh installs this. Watches the server code; when your
+# GitHub deploy changes it, drift-lists-restart.service restarts the app.
+# (Files in public/ are read fresh on every request, so they need no restart.)
+[Unit]
+Description=Restart Drift Lists when its code changes
+
+[Path]
+PathChanged=@APP_DIR@/server.js
+PathChanged=@APP_DIR@/auth.js
+PathChanged=@APP_DIR@/store.js
+
+[Install]
+WantedBy=multi-user.target

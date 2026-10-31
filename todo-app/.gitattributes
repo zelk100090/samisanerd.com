@@ -1,0 +1,2 @@
+# Shell scripts must keep Unix line endings or bash on the Pi rejects them.
+*.sh text eol=lf

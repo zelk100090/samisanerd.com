@@ -1,0 +1,25 @@
+# Template: setup-pi.sh fills in the @...@ values and installs this.
+[Unit]
+Description=Drift Lists
+After=network.target
+
+[Service]
+User=@USER@
+WorkingDirectory=@APP_DIR@
+ExecStart=@NODE@ server.js
+Environment=PUBLIC_ORIGIN=@ORIGIN@
+Environment=TRUST_PROXY=1
+Environment=PORT=8787
+# Password hash, sessions and your lists live here, outside the git checkout.
+Environment=DATA_DIR=@DATA_DIR@
+Restart=on-failure
+
+# Lock the process down: it can only write its data folder.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=@DATA_DIR@
+
+[Install]
+WantedBy=multi-user.target

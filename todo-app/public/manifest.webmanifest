@@ -1,0 +1,9 @@
+{
+  "name": "Drift Lists",
+  "short_name": "Drift Lists",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#e8e5ee",
+  "theme_color": "#8b7cf6",
+  "icons": [{ "src": "icon.png", "sizes": "256x256", "type": "image/png" }]
+}
