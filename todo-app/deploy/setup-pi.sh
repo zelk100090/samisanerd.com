@@ -30,6 +30,9 @@ if [ ! -f "$DATA_DIR/auth.json" ]; then
   echo; echo "Choose your Drift Lists password (at least 10 characters):"
   sudo -u "$RUN_USER" "$NODE" "$APP_DIR/set-password.js" --data "$DATA_DIR"
 fi
+# Files made by running set-password.js with sudo belong to root, which the
+# service can't read. Hand everything in the data folder to the service user.
+chown -R "$RUN_USER": "$DATA_DIR"
 
 systemctl daemon-reload
 systemctl enable drift-lists.service drift-lists-restart.path

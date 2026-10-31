@@ -21,7 +21,12 @@ const failures = new Map(); // ip -> { count, first, lockedUntil, strikes }
 function init(dataDir) {
   authFile = path.join(dataDir, 'auth.json');
   sessionsFile = path.join(dataDir, 'sessions.json');
-  try { passwordHash = JSON.parse(fs.readFileSync(authFile, 'utf8')).passwordHash || null; } catch {}
+  try { passwordHash = JSON.parse(fs.readFileSync(authFile, 'utf8')).passwordHash || null; }
+  catch (e) {
+    // Missing is fine (server.js explains how to set one); anything else, say so plainly.
+    if (e.code === 'EACCES') throw new Error(`Can't read ${authFile}: it belongs to another user. Fix with: sudo chown -R <service user> ${dataDir}`);
+    if (e.code !== 'ENOENT') throw new Error(`Can't read ${authFile}: ${e.message}`);
+  }
   try {
     const now = Date.now();
     for (const [k, v] of Object.entries(JSON.parse(fs.readFileSync(sessionsFile, 'utf8')))) {
