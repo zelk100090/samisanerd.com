@@ -25,12 +25,21 @@
     editing: null, armedDelete: false, swIdx: 0,
   };
 
-  // Decides the order tasks appear in within a list.
-  // Each item: { id, text, done, order, doneAt, createdAt }. `order` and the
-  // timestamps are Date.now() numbers; `doneAt` is null while unchecked.
-  function sortItems(items) {
-    // TODO(human): return a new sorted array (don't mutate `items`).
-    return items.slice().sort((a, b) => a.order - b.order);
+  // Tasks appear in the order you drag them into. Each task's `order` is just
+  // a number to sort by; new tasks start at Date.now() so they land at the bottom.
+  const byOrder = items => items.slice().sort((a, b) => a.order - b.order || a.createdAt - b.createdAt);
+
+  // Picks the `order` for a task dropped between two neighbours. `prev` and
+  // `next` are their order numbers, or null at the top/bottom of the list.
+  // Returns null when there's no room left, and the caller renumbers instead.
+  function orderBetween(prev, next) {
+    if (prev == null && next == null) return Date.now();
+    if (prev == null) return next - 1;
+    if (next == null) return prev + 1;
+    // Orders are ~1.8e12, so a double only has ~12 bits left for fractions.
+    // Renumber long before halving runs out of precision.
+    if (next - prev < 1e-3) return null;
+    return (prev + next) / 2;
   }
 
   const orderedLists = () => {
@@ -39,6 +48,64 @@
   };
   const activeList = () => S.lists.find(l => l.id === S.active) || null;
   const itemsOf = id => S.items.filter(i => i.listId === id);
+
+  // Tasks nest to any depth: a task's `parentId` names the task it sits under.
+  // treeOf() gives the list in display order, each row with its depth and parent.
+  // A missing parent (deleted on another device) makes a task top-level.
+  function treeOf(listId) {
+    const its = itemsOf(listId), byId = new Map(its.map(i => [i.id, i])), kids = new Map();
+    const hasParent = i => i.parentId && i.parentId !== i.id && byId.has(i.parentId);
+    for (const i of its) if (hasParent(i)) (kids.get(i.parentId) || kids.set(i.parentId, []).get(i.parentId)).push(i);
+    const rows = [], seen = new Set();
+    const walk = (it, depth, parent) => {
+      if (seen.has(it.id)) return;
+      seen.add(it.id);
+      rows.push({ it, depth, parent });
+      for (const c of byOrder(kids.get(it.id) || [])) walk(c, depth + 1, it.id);
+    };
+    for (const t of byOrder(its.filter(i => !hasParent(i)))) walk(t, 0, null);
+    // Tasks caught in a parent loop (two devices nesting tasks into each other at
+    // the same moment) never get reached from the top, so show them top-level.
+    for (const i of byOrder(its)) walk(i, 0, null);
+    return rows;
+  }
+  const siblingsOf = (listId, parentId) => treeOf(listId).filter(r => r.parent === parentId).map(r => r.it);
+  const childrenOf = (listId, id) => siblingsOf(listId, id);
+  // Everything nested under a task, at any depth (rows right after it that sit deeper).
+  function subtreeOf(listId, id) {
+    const rows = treeOf(listId), i = rows.findIndex(r => r.it.id === id), out = [];
+    if (i < 0) return out;
+    for (let j = i + 1; j < rows.length && rows[j].depth > rows[i].depth; j++) out.push(rows[j].it);
+    return out;
+  }
+  // How finished each task is, 0..1: done counts as 1, otherwise the average of
+  // its subtasks (so a half-finished subtask counts as half).
+  function progressOf(rows) {
+    const kids = new Map(), p = new Map();
+    for (const r of rows) if (r.parent) (kids.get(r.parent) || kids.set(r.parent, []).get(r.parent)).push(r.it);
+    for (let i = rows.length - 1; i >= 0; i--) { // children come after parents, so walk backwards
+      const it = rows[i].it, ks = kids.get(it.id) || [];
+      p.set(it.id, it.done ? 1 : ks.length ? ks.reduce((s, k) => s + p.get(k.id), 0) / ks.length : 0);
+    }
+    return { p, kids };
+  }
+
+  // An `order` that puts a task right after `afterId` among `parentId`'s tasks
+  // (first, when afterId is null). Also returns ops if the siblings needed renumbering.
+  function slot(listId, parentId, afterId, movingId) {
+    const sibs = siblingsOf(listId, parentId).filter(i => i.id !== movingId);
+    const at = afterId ? sibs.findIndex(i => i.id === afterId) + 1 : 0;
+    const prev = sibs[at - 1], next = sibs[at];
+    const o = orderBetween(prev ? prev.order : null, next ? next.order : null);
+    if (o != null && (!prev || o > prev.order) && (!next || o < next.order)) return { order: o, ops: [] };
+    const base = sibs.length ? Math.min(...sibs.map(i => i.order)) : Date.now();
+    const ops = [];
+    sibs.forEach((s, i) => {
+      const v = base + (i < at ? i : i + 1); // leave a gap at `at`
+      if (v !== s.order) ops.push({ op: 'put', kind: 'item', id: s.id, data: { order: v } });
+    });
+    return { order: base + at, ops };
+  }
   const newId = () => Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join('');
 
   /* ---------- sync with the server ----------
@@ -165,11 +232,53 @@
     const l = activeList(); text = text.trim();
     if (!l || !text) return;
     const now = Date.now();
-    send([{ op: 'put', kind: 'item', id: newId(), data: { listId: l.id, text, done: false, order: now, createdAt: now, doneAt: null } }]);
+    const order = Math.max(now, ...itemsOf(l.id).map(i => i.order + 1)); // always below a task dragged to the bottom
+    send([{ op: 'put', kind: 'item', id: newId(), data: { listId: l.id, text, done: false, order, createdAt: now, doneAt: null } }]);
   }
   function toggleItem(it) {
     send([{ op: 'put', kind: 'item', id: it.id, data: { done: !it.done, doneAt: it.done ? null : Date.now() } }]);
   }
+  function placeItem(id, parentId, afterId, extra = []) {
+    const l = activeList(); if (!l) return;
+    const { order, ops } = slot(l.id, parentId, afterId, id);
+    send([...ops, { op: 'put', kind: 'item', id, data: { order, parentId } }, ...extra]);
+  }
+  // Tab: become the last subtask of the task above it at the same level.
+  // Its own subtasks stay nested under it.
+  function indent(id) {
+    const l = activeList(), r = treeOf(l.id).find(x => x.it.id === id);
+    if (!r) return false;
+    const sibs = siblingsOf(l.id, r.parent), i = sibs.findIndex(s => s.id === id);
+    if (i < 1) return false;
+    const parentId = sibs[i - 1].id, last = childrenOf(l.id, parentId).pop();
+    placeItem(id, parentId, last ? last.id : null);
+    return true;
+  }
+  // Shift+Tab: move out one level, right after its old parent. Siblings below it
+  // become its subtasks (after any it already has), like an outliner, so nothing jumps.
+  function outdent(id) {
+    const l = activeList(), rows = treeOf(l.id), r = rows.find(x => x.it.id === id);
+    if (!r || !r.parent) return false;
+    const grandparent = rows.find(x => x.it.id === r.parent).parent;
+    const sibs = childrenOf(l.id, r.parent), later = sibs.slice(sibs.findIndex(s => s.id === id) + 1);
+    const own = childrenOf(l.id, id), base = own.length ? own[own.length - 1].order : 0;
+    placeItem(id, grandparent, r.parent,
+      later.map((s, j) => ({ op: 'put', kind: 'item', id: s.id, data: { parentId: id, order: base + j + 1 } })));
+    return true;
+  }
+  // Enter while editing: a new empty task right below, opened for typing. Below a
+  // task that has subtasks, it becomes the first subtask.
+  function addBelow(id) {
+    const l = activeList(), rows = treeOf(l.id), r = rows.find(x => x.it.id === id);
+    if (!r) return;
+    const hasKids = rows.some(x => x.parent === id);
+    const parentId = hasKids ? id : r.parent;
+    const { order, ops } = slot(l.id, parentId, hasKids ? null : id, null);
+    const nid = newId(), now = Date.now();
+    S.editNext = nid;
+    send([...ops, { op: 'put', kind: 'item', id: nid, data: { listId: l.id, text: '', done: false, order, createdAt: now, doneAt: null, parentId } }]);
+  }
+  const withSubtasks = it => [it, ...subtreeOf(it.listId, it.id)];
   function deleteItems(its, label) {
     if (!its.length) return;
     const saved = its.map(({ id, ...data }) => ({ op: 'put', kind: 'item', id, data }));
@@ -256,7 +365,7 @@
     const title = $('title');
     if (document.activeElement !== title) title.value = l.name || '';
     if (S.focusTitle) { S.focusTitle = false; title.focus(); title.select(); }
-    const its = sortItems(itemsOf(l.id));
+    const rows = treeOf(l.id), its = rows.map(r => r.it);
     const done = its.filter(i => i.done).length;
     $('count').textContent = its.length ? `${done} of ${its.length} done` : 'No tasks';
     $('bar').style.width = its.length ? (done / its.length * 100) + '%' : '0';
@@ -268,22 +377,46 @@
     del.classList.toggle('armed', S.armedDelete);
     del.textContent = S.armedDelete ? `Confirm: delete list and ${its.length} task${its.length === 1 ? '' : 's'}` : 'Delete list';
     renderSwatches(l);
-    if (S.editing) return;
-    renderItems(its);
+    if (S.editing || drag) return; // don't rebuild rows under your cursor
+    renderItems(rows);
     if (its.length) $('empty').hidden = true; else emptyState();
+    if (S.editNext) { const id = S.editNext; S.editNext = null; startEdit(id); }
   }
 
   const CHECK_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
   const X_SVG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
-  function renderItems(its) {
-    $('items').replaceChildren(...its.map(it => {
-      const li = el('li', 'item' + (it.done ? ' done' : '')); li.dataset.id = it.id;
+  const GRIP_SVG = '<svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor"><circle cx="2.5" cy="3" r="1.4"/><circle cx="7.5" cy="3" r="1.4"/><circle cx="2.5" cy="8" r="1.4"/><circle cx="7.5" cy="8" r="1.4"/><circle cx="2.5" cy="13" r="1.4"/><circle cx="7.5" cy="13" r="1.4"/></svg>';
+  // pathLength=100 lets the dash length be the percentage directly.
+  const ringSvg = pct => '<svg class="ring-svg" viewBox="0 0 22 22" aria-hidden="true">'
+    + '<circle class="ring-track" cx="11" cy="11" r="9.75" pathLength="100"/>'
+    + (pct ? `<circle class="ring-fill" cx="11" cy="11" r="9.75" pathLength="100" stroke-dasharray="${pct} 100"/>` : '')
+    + '</svg>';
+  function renderItems(rows) {
+    const focusedGrip = document.activeElement?.closest?.('.grip')?.closest('.item')?.dataset.id;
+    const { p, kids } = progressOf(rows);
+    $('items').replaceChildren(...rows.map(({ it, depth, parent }) => {
+      const li = el('li', 'item' + (depth ? ' child' : '') + (it.done ? ' done' : ''));
+      li.dataset.id = it.id; li.dataset.depth = depth;
+      li.style.setProperty('--depth', depth);
+      if (parent) li.dataset.parent = parent;
       const c = el('button', 'check'); c.type = 'button'; c.setAttribute('role', 'checkbox');
-      c.setAttribute('aria-checked', !!it.done); c.setAttribute('aria-label', it.text); c.innerHTML = CHECK_SVG;
+      c.setAttribute('aria-checked', !!it.done); c.setAttribute('aria-label', it.text || 'Untitled task'); c.innerHTML = CHECK_SVG;
+      // Two or more subtasks: the checkbox turns into a ring that fills as they get done.
+      const ks = kids.get(it.id) || [];
+      if (ks.length >= 2 && !it.done) {
+        const pct = Math.round(p.get(it.id) * 100);
+        c.classList.add('ring');
+        c.title = `${ks.filter(k => k.done).length} of ${ks.length} subtasks done · ${pct}%`;
+        c.setAttribute('aria-label', `${it.text || 'Untitled task'}, ${pct}% done`);
+        c.innerHTML = ringSvg(pct) + CHECK_SVG;
+      }
       const d = el('button', 'del'); d.type = 'button'; d.setAttribute('aria-label', 'Delete task'); d.innerHTML = X_SVG;
-      li.append(c, el('span', 'text', it.text), d);
+      const g = el('button', 'grip'); g.type = 'button'; g.title = 'Drag to reorder';
+      g.setAttribute('aria-label', 'Reorder task (drag, or use the arrow keys)'); g.innerHTML = GRIP_SVG;
+      li.append(g, c, el('span', it.text ? 'text' : 'text blank', it.text || 'Untitled task'), d);
       return li;
     }));
+    if (focusedGrip) $('items').querySelector(`.item[data-id="${focusedGrip}"] .grip`)?.focus();
   }
   function renderSwatches(l) {
     const box = $('swatches');
@@ -307,23 +440,173 @@
   }
 
   /* ---------- inline editing ---------- */
-  function startEdit(li) {
-    const it = S.items.find(i => i.id === li.dataset.id); if (!it) return;
-    S.editing = it.id;
-    const span = li.querySelector('.text');
-    const input = el('input', 'edit'); input.value = it.text; input.maxLength = 500; input.setAttribute('aria-label', 'Edit task');
-    span.replaceWith(input); input.focus();
+  // Enter: save and start a new task below. Tab / Shift+Tab: indent / outdent
+  // and keep typing. Esc: cancel. Clicking away saves; a task left blank is removed.
+  function startEdit(id) {
+    const li = $('items').querySelector(`.item[data-id="${id}"]`);
+    const it = S.items.find(i => i.id === id);
+    if (!li || !it) return;
+    S.editing = id;
+    const input = el('input', 'edit');
+    input.value = it.text; input.maxLength = 500; input.placeholder = 'New task'; input.enterKeyHint = 'next';
+    input.setAttribute('aria-label', 'Edit task');
+    li.querySelector('.text').replaceWith(input);
+    input.focus(); input.setSelectionRange(input.value.length, input.value.length);
     let finished = false;
-    const finish = save => {
+    // mode: 'save' (blur/Enter on blank), 'keep' (moving on: keep it even if blank), 'cancel' (Esc)
+    const finish = mode => {
       if (finished) return; finished = true; S.editing = null;
-      const v = input.value.trim();
-      if (save && v && v !== it.text) send([{ op: 'put', kind: 'item', id: it.id, data: { text: v } }]);
-      else if (save && !v) deleteItems([it], 'Deleted empty task');
+      const v = mode === 'cancel' ? it.text : input.value.trim();
+      if (!v && mode !== 'keep' && !childrenOf(it.listId, it.id).length) {
+        if (it.text) deleteItems([it], 'Deleted empty task');
+        else send([{ op: 'delete', kind: 'item', id: it.id }]); // a new task you never typed in
+      } else if (v !== it.text) send([{ op: 'put', kind: 'item', id: it.id, data: { text: v } }]);
       else render();
     };
-    input.onkeydown = e => { if (e.key === 'Enter') finish(true); else if (e.key === 'Escape') { e.stopPropagation(); finish(false); } };
-    input.onblur = () => finish(true);
+    input.onkeydown = e => {
+      if (e.isComposing) return;
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (!input.value.trim()) finish('save'); // Enter on a blank task ends the run
+        else { finish('keep'); addBelow(it.id); }
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        finish('keep');
+        S.editNext = it.id; // reopen this task after it moves
+        if (!(e.shiftKey ? outdent(it.id) : indent(it.id))) { S.editNext = null; startEdit(it.id); }
+      } else if (e.key === 'Escape') { e.stopPropagation(); finish('cancel'); }
+    };
+    input.onblur = () => finish('save');
   }
+
+  /* ---------- drag to reorder ---------- */
+  // Mouse: grab a task anywhere and move it 5px to start dragging (a plain click
+  // still ticks/edits). Touch: drag by the grip, so the list still scrolls.
+  // Drag right to make it a subtask of the task above, left to un-nest it.
+  let drag = null, suppressClick = false;
+  const depthOfRow = r => +r.dataset.depth || 0;
+
+  const scrollBox = () => $('scroll');
+  const contentY = clientY => clientY - scrollBox().getBoundingClientRect().top + scrollBox().scrollTop;
+
+  function startDrag(p, clientX, clientY) {
+    // Everything nested under the task travels with it: hide it while it's in the air.
+    const nested = new Set(subtreeOf(activeList().id, p.id).map(i => i.id));
+    const kids = [...$('items').children].filter(r => nested.has(r.dataset.id));
+    kids.forEach(k => k.classList.add('drag-hidden'));
+    const rows = [...$('items').children].filter(r => !r.classList.contains('drag-hidden'));
+    const depth0 = depthOfRow(p.li);
+    drag = {
+      ...p, rows, kids, from: rows.indexOf(p.li), to: rows.indexOf(p.li),
+      depth0, depth: depth0, prev: null,
+      indent: parseFloat(getComputedStyle($('items')).getPropertyValue('--indent')) || 28, // px per level
+      tops: rows.map(r => r.offsetTop), heights: rows.map(r => r.offsetHeight),
+      startX: clientX, lastX: clientX, startY: contentY(clientY), lastY: clientY, raf: 0,
+    };
+    getSelection()?.removeAllRanges();
+    $('items').classList.add('sorting');
+    p.li.classList.add('dragging');
+    addEventListener('pointermove', onDragMove, { passive: false });
+    addEventListener('pointerup', onDragEnd);
+    addEventListener('pointercancel', onDragCancel);
+    drag.raf = requestAnimationFrame(autoScroll);
+  }
+  function layoutDrag() {
+    const d = drag, dy = contentY(d.lastY) - d.startY;
+    const mid = d.tops[d.from] + d.heights[d.from] / 2 + dy;
+    let to = d.from;
+    d.rows.forEach((_, i) => {
+      const centre = d.tops[i] + d.heights[i] / 2;
+      if (i < d.from && mid < centre) to = Math.min(to, i);
+      if (i > d.from && mid > centre) to = Math.max(to, i);
+    });
+    d.to = to;
+    // Depth follows the sideways drag, within what the spot allows: at most one
+    // level deeper than the task above, and at least as deep as the task below
+    // (otherwise you'd split that task off from its parent).
+    const others = d.rows.filter((_, i) => i !== d.from);
+    const prev = others[to - 1], next = others[to];
+    const want = d.depth0 + Math.round((d.lastX - d.startX) / d.indent);
+    const max = prev ? depthOfRow(prev) + 1 : 0;
+    const min = next ? depthOfRow(next) : 0;
+    d.depth = Math.min(Math.max(want, min), max);
+    d.prev = prev;
+    d.li.style.transform = `translate(${(d.depth - d.depth0) * d.indent}px, ${dy}px)`;
+    const h = d.heights[d.from]; // rows between old and new spot slide over to make the gap
+    d.rows.forEach((r, i) => {
+      if (i === d.from) return;
+      const shift = d.from < i && i <= to ? -h : to <= i && i < d.from ? h : 0;
+      r.style.transform = shift ? `translateY(${shift}px)` : '';
+    });
+  }
+  function autoScroll() { // scroll the list while dragging near its top or bottom edge
+    if (!drag) return;
+    const box = scrollBox().getBoundingClientRect(), edge = 56, y = drag.lastY;
+    const v = y < box.top + edge ? -(box.top + edge - y) / 4 : y > box.bottom - edge ? (y - box.bottom + edge) / 4 : 0;
+    if (v) { scrollBox().scrollTop += v; layoutDrag(); }
+    drag.raf = requestAnimationFrame(autoScroll);
+  }
+  function onDragMove(e) {
+    if (!drag || e.pointerId !== drag.pointerId) return;
+    e.preventDefault();
+    drag.lastX = e.clientX; drag.lastY = e.clientY;
+    layoutDrag();
+  }
+  function dropAt(d) {
+    if (!d.prev) return placeItem(d.id, null, null); // very top of the list
+    const info = new Map(treeOf(activeList().id).map(r => [r.it.id, r]));
+    let x = info.get(d.prev.dataset.id);
+    if (d.depth > x.depth) return placeItem(d.id, x.it.id, null); // first subtask of the task above
+    // Otherwise it lands right after the task above, or after whichever of that
+    // task's parents sits at the chosen depth.
+    while (x.depth > d.depth) x = info.get(x.parent);
+    placeItem(d.id, x.parent, x.it.id);
+  }
+  function finishDrag(commit) {
+    const d = drag; if (!d) return;
+    drag = null;
+    cancelAnimationFrame(d.raf);
+    removeEventListener('pointermove', onDragMove);
+    removeEventListener('pointerup', onDragEnd);
+    removeEventListener('pointercancel', onDragCancel);
+    $('items').classList.remove('sorting');
+    d.li.classList.remove('dragging');
+    d.rows.forEach(r => { r.style.transform = ''; });
+    d.kids.forEach(k => k.classList.remove('drag-hidden'));
+    suppressClick = true; setTimeout(() => { suppressClick = false; }, 0); // the drop isn't a click
+    if (commit && (d.to !== d.from || d.depth !== d.depth0)) dropAt(d); else render();
+  }
+  const onDragEnd = e => { if (drag && e.pointerId === drag.pointerId) finishDrag(true); };
+  const onDragCancel = e => { if (drag && e.pointerId === drag.pointerId) finishDrag(false); };
+
+  $('items').addEventListener('pointerdown', e => {
+    const li = e.target.closest('.item');
+    if (!li || S.editing || drag || e.button !== 0) return;
+    const p = { li, id: li.dataset.id, pointerId: e.pointerId };
+    if (e.target.closest('.grip')) { e.preventDefault(); startDrag(p, e.clientX, e.clientY); return; }
+    if (e.pointerType !== 'mouse' || e.target.closest('.check, .del, input')) return;
+    const x0 = e.clientX, y0 = e.clientY;
+    const watch = ev => {
+      if (ev.pointerId !== p.pointerId) return;
+      // Measure from where you pressed, not from where the 5px threshold was crossed.
+      if (Math.hypot(ev.clientX - x0, ev.clientY - y0) > 5) { stop(); startDrag(p, x0, y0); onDragMove(ev); }
+    };
+    const stop = () => { removeEventListener('pointermove', watch); removeEventListener('pointerup', stop); };
+    addEventListener('pointermove', watch);
+    addEventListener('pointerup', stop);
+  });
+  // Keyboard: focus a task's grip (Tab), then ↑/↓ moves it among its siblings.
+  $('items').addEventListener('keydown', e => {
+    const grip = e.target.closest('.grip');
+    if (!grip || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
+    e.preventDefault();
+    const id = grip.closest('.item').dataset.id, l = activeList();
+    const parent = treeOf(l.id).find(r => r.it.id === id)?.parent ?? null;
+    const sibs = siblingsOf(l.id, parent), i = sibs.findIndex(s => s.id === id);
+    const j = i + (e.key === 'ArrowUp' ? -1 : 1);
+    if (i < 0 || j < 0 || j >= sibs.length) return;
+    placeItem(id, parent, e.key === 'ArrowUp' ? (j > 0 ? sibs[j - 1].id : null) : sibs[j].id);
+  });
 
   /* ---------- quick switcher ---------- */
   function openSwitcher() { closeDrawer(); $('switcher').hidden = false; $('swInput').value = ''; S.swIdx = 0; renderSwitcher(); $('swInput').focus(); }
@@ -381,11 +664,14 @@
   /* ---------- events ---------- */
   $('addForm').addEventListener('submit', e => { e.preventDefault(); addItem($('addInput').value); $('addInput').value = ''; });
   $('items').addEventListener('click', e => {
-    const li = e.target.closest('.item'); if (!li) return;
+    const li = e.target.closest('.item'); if (!li || suppressClick || e.target.closest('.grip')) return;
     const it = S.items.find(i => i.id === li.dataset.id); if (!it) return;
     if (e.target.closest('.check')) toggleItem(it);
-    else if (e.target.closest('.del')) deleteItems([it], `Deleted “${it.text.length > 32 ? it.text.slice(0, 32) + '…' : it.text}”`);
-    else if (e.target.closest('.text')) startEdit(li);
+    else if (e.target.closest('.del')) {
+      const name = it.text || 'Untitled task', all = withSubtasks(it);
+      deleteItems(all, `Deleted “${name.length > 32 ? name.slice(0, 32) + '…' : name}”${all.length > 1 ? ` and ${all.length - 1} subtask${all.length > 2 ? 's' : ''}` : ''}`);
+    }
+    else if (e.target.closest('.text')) startEdit(it.id);
   });
   const title = $('title');
   title.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); title.blur(); } if (e.key === 'Escape') { const l = activeList(); title.value = l ? l.name : ''; title.blur(); } });
@@ -395,7 +681,13 @@
   $('moreBtn').onclick = e => { e.stopPropagation(); togglePop($('morePop'), $('moreBtn')); };
   $('colorPop').onclick = $('morePop').onclick = e => e.stopPropagation();
   document.addEventListener('click', () => { if (!$('colorPop').hidden || !$('morePop').hidden) closePops(); });
-  const clearDone = () => { const l = activeList(); if (!l) return; const d = itemsOf(l.id).filter(i => i.done); closePops(); deleteItems(d, `Cleared ${d.length} completed task${d.length === 1 ? '' : 's'}`); };
+  const clearDone = () => {
+    const l = activeList(); if (!l) return;
+    // A finished task is only cleared if everything nested under it is finished too.
+    const d = treeOf(l.id).map(r => r.it).filter(it => it.done && subtreeOf(l.id, it.id).every(s => s.done));
+    closePops();
+    deleteItems(d, `Cleared ${d.length} completed task${d.length === 1 ? '' : 's'}`);
+  };
   $('clearDone').onclick = clearDone; $('clearDoneMenu').onclick = clearDone;
   $('deleteList').onclick = () => { if (S.armedDelete) deleteActiveList(); else { S.armedDelete = true; renderMain(); } };
   $('newList').onclick = () => newList();
@@ -426,6 +718,7 @@
       else if (e.code === 'KeyS') { e.preventDefault(); toggleCompact(); }
       return;
     }
+    if (e.key === 'Escape' && drag) { finishDrag(false); return; }
     if (e.key === 'Escape') { closePops(); closeDrawer(); if (!$('switcher').hidden) closeSwitcher(); return; }
     if (!typing && e.key === '/') { e.preventDefault(); $('addInput').focus(); }
   });
@@ -433,7 +726,7 @@
   // Swipe left/right on the panel to move between lists (phone).
   let tx = null, ty = 0;
   $('panel').addEventListener('touchstart', e => {
-    if (e.touches.length !== 1 || e.target.closest('input')) { tx = null; return; }
+    if (e.touches.length !== 1 || e.target.closest('input, .grip')) { tx = null; return; }
     tx = e.touches[0].clientX; ty = e.touches[0].clientY;
   }, { passive: true });
   $('panel').addEventListener('touchend', e => {

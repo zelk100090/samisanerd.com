@@ -227,6 +227,31 @@ svg { display: block; flex: none; }
 .is-desktop .app { padding-top: 36px; }
 .is-desktop .app.compact .sidebar, .is-desktop .app.mobile .sidebar, .is-desktop .app.compact .hot { top: 36px; }
 .is-desktop button, .is-desktop input { -webkit-app-region: no-drag; app-region: no-drag; }
+
+/* Drag to reorder */
+.scroll { position: relative; }
+.grip { flex: none; width: 14px; height: 22px; margin: 0 -6px 0 -6px; border-radius: 5px; display: grid; place-items: center; color: var(--muted); opacity: 0; cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.item:hover .grip, .grip:focus-visible { opacity: .7; }
+@media (hover: none) { .grip { opacity: .45; width: 22px; margin-left: -10px; } }
+.items.sorting { -webkit-user-select: none; user-select: none; cursor: grabbing; }
+.items.sorting .item:not(.dragging) { transition: transform .16s ease; }
+.items.sorting .item:not(.dragging):hover { background: transparent; }
+.item.dragging { position: relative; z-index: 2; background: var(--panel); box-shadow: var(--shadow); cursor: grabbing; }
+.item.dragging .grip { opacity: 1; }
+
+/* Subtasks: each level indents by --indent (app.js reads it for sideways dragging) */
+.items { --indent: 28px; }
+@media (max-width: 759px) { .items { --indent: 20px; } }
+.item { padding-left: calc(10px + var(--depth, 0) * var(--indent)); }
+.item.drag-hidden { display: none; }
+.text.blank { color: var(--muted); }
+
+/* Progress ring: a task with 2+ subtasks shows how much of it is done */
+.check.ring { position: relative; border-color: transparent; border-radius: 50%; }
+.ring-svg { position: absolute; inset: -1.5px; width: 20px; height: 20px; transform: rotate(-90deg); overflow: visible; }
+.ring-track { fill: none; stroke: color-mix(in oklab, var(--muted) 45%, transparent); stroke-width: 1.5; }
+.ring-fill { fill: none; stroke: var(--accent); stroke-width: 2.25; stroke-linecap: round; }
+.check.ring:hover .ring-track { stroke: var(--accent); }
 </style>
 </head>
 <body>

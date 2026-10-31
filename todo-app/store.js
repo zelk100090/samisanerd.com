@@ -14,8 +14,10 @@ const isText = max => v => typeof v === 'string' && v.trim().length > 0 && v.len
 
 const FIELDS = {
   list: { name: isText(80), color: v => COLORS.has(v), pinned: isBool, order: isNum, createdAt: isNum },
-  item: { listId: v => typeof v === 'string' && ID.test(v), text: isText(500), done: isBool,
-          order: isNum, createdAt: isNum, doneAt: v => v === null || isNum(v) },
+  // Task text may be empty while you're still typing a new task (Enter makes a blank one).
+  item: { listId: v => typeof v === 'string' && ID.test(v), text: v => typeof v === 'string' && v.length <= 500,
+          done: isBool, order: isNum, createdAt: isNum, doneAt: v => v === null || isNum(v),
+          parentId: v => v === null || (typeof v === 'string' && ID.test(v)) },
 };
 const REQUIRED = { list: ['name'], item: ['listId', 'text'] };
 
