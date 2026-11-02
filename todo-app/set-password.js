@@ -29,7 +29,12 @@ async function readPiped() {
   if (process.stdin.isTTY) {
     pw = await readHidden('New password: ');
     if (pw !== await readHidden('Type it again: ')) { console.error('The two passwords did not match.'); process.exit(1); }
-  } else pw = await readPiped();
+  } else {
+    // No interactive terminal (piped input, or a terminal that isn't passed through):
+    // say so, otherwise this just looks frozen.
+    console.error('Waiting for the password on standard input: type it, press Enter, then Ctrl+D.');
+    pw = await readPiped();
+  }
 
   if (pw.length < 10) { console.error('Use at least 10 characters. A few random words works well.'); process.exit(1); }
 
