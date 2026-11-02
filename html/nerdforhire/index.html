@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nerd For Hire</title>
+    <link rel="stylesheet" href="/nerdforhire/style.css">
+    <link rel="stylesheet" href="/background.css">
+    <link rel="stylesheet" href="/main.css">
+    <link rel="stylesheet" href="/header.css">
+    <script src="form.js" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!--# set var="Nerd For Hire Help Form" value="Blog" -->
+    <!--# include virtual="/header.html" -->
+    <div class="desktop">
+        <div class="panel navBar">
+            <a href="/"><img src="/logo.png" class="logo"></a>
+            <span class="pageTitle fredoka">Nerd For Hire Help Form</span>
+        </div>
+    </div>
+    <div class="mobile">
+        <div class="panel navBarMobile">
+            <a href="/"><img src="/logo.png" class="logoMobile"></a>
+            <span class="pageTitleMobile fredoka">Nerd For Hire Help Form</span>
+        </div>
+    </div>
+
+    <form action="/contact" method="POST" id="form">
+        <div class="panel formPanel">
+            <label for="name" class="fredoka formText">Your Name:</label><br>
+            <input type="text" id="name" name="name" class="formInput" autocomplete="name" required>
+        </div>
+        <div class="panel formPanel">
+            <label for="contact" class="fredoka formText">Contact Info:</label><br>
+            <input type="text" id="contact" name="contact" class="formInput" autocomplete="email" required>
+        </div>
+        <div class="panel formPanel">
+            <label for="address" class="fredoka formText">Address:</label><br>
+            <input type="text" id="address" name="address" class="formInput" autocomplete="street-address" required>
+        </div>
+        <div class="panel formPanel">
+            <label for="description" class="fredoka formText">Description of Issue:</label><br>
+            <input type="text" id="description" name="description" class="formInput" required>
+        </div>
+        <div class="panel formPanel">
+            <label for="file" class="fredoka formText">Image or Other File:</label><br>
+            <input type="file" id="file" name="file" class="formInput">
+        </div>
+
+        <div class="panel formPanel honeypot">
+            <label for="honeypot" class="fredoka formText">Text:</label><br>
+            <input type="text" id="honeypot" name="honeypot" class="formInput" autocomplete="off">
+        </div>
+
+        <button type="submit" id="submit">Send</button>
+        <p id="message"></p>
+    </form> 
+</body>
+</htmla
