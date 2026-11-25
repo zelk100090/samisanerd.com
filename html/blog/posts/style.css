@@ -77,6 +77,7 @@
     display: block;
     width: fit-content;
     margin: 1vh;
+    height: 10vh;
     margin-left: auto;
     margin-right: auto;
     text-decoration: none;
@@ -136,4 +137,25 @@ h1 {
 .authorText {
     text-decoration: none;
     color: white;
+}
+
+.aiDisclaimerBox {
+    display: block;
+    width: 70vw;
+    margin: 1vh;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 3vh;
+}
+
+.aiDisclaimerText {
+    color: white;
+    font-size: 2.5vh;
+    
+}
+.aiDisclaimerTitle {
+    color: white;
+    text-align: center;
+    margin-bottom: 1vh;
+    font-size: 3.5vh;
 }

@@ -32,32 +32,34 @@
     <form action="/contact" method="POST" id="form">
         <div class="panel formPanel">
             <label for="name" class="fredoka formText">Your Name:</label><br>
-            <input type="text" id="name" name="name" class="formInput" autocomplete="name" required>
+            <input style="width: 25vw" type="text" id="name" name="name" class="formInput fredoka" autocomplete="name" placeholder="First & Last" required>
         </div>
         <div class="panel formPanel">
             <label for="contact" class="fredoka formText">Contact Info:</label><br>
-            <input type="text" id="contact" name="contact" class="formInput" autocomplete="email" required>
+            <input style="width: 30vw" type="text" id="contact" name="contact" class="formInput fredoka" autocomplete="email" placeholder="Email or Phone Number" required>
         </div>
         <div class="panel formPanel">
-            <label for="address" class="fredoka formText">Address:</label><br>
-            <input type="text" id="address" name="address" class="formInput" autocomplete="street-address" required>
+            <label for="address" class="fredoka formText">Town:</label><br>
+            <input style="width: 30vw" type="text" id="address" name="address" class="formInput fredoka" autocomplete="street-address" placeholder="To ensure you're not too far away " required>
+        </div>
+        <div class="panel formPanel message">
+            <label for="description" class="fredoka formText">What can I help you with?</label><br>
+            <br>
+            <textarea aria-describedby="descriptionHint" style="width: 80vw; height: 20vh;" type="text" id="description" name="description" class="formInputBig fredoka" required></textarea>
         </div>
         <div class="panel formPanel">
-            <label for="description" class="fredoka formText">Description of Issue:</label><br>
-            <input type="text" id="description" name="description" class="formInput" required>
-        </div>
-        <div class="panel formPanel">
-            <label for="file" class="fredoka formText">Image or Other File:</label><br>
-            <input type="file" id="file" name="file" class="formInput">
+            <label for="file" class="fredoka formText">Images or Other Files (Optional):</label><br>
+            <p class="fredoka hint" id="descriptionHint">Include pictures or other relavent files here if you're looking for help solving an issue.<br></p>
+            <input type="file" id="file" name="file" class="fileUpload fredoka">
         </div>
 
-        <div class="panel formPanel honeypot">
-            <label for="honeypot" class="fredoka formText">Text:</label><br>
-            <input type="text" id="honeypot" name="honeypot" class="formInput" autocomplete="off">
+        <div class="panel formPanel company">
+            <label for="company" class="fredoka formText">Company:</label><br>
+            <input type="text" name="company" class="formInput fredoka" autocomplete="off">
         </div>
 
-        <button type="submit" id="submit">Send</button>
-        <p id="message"></p>
+        <button type="submit" id="submit" class="button panel fredoka buttonText"><span id="message" class="">Submit</span></button>
+        
     </form> 
 </body>
 </htmla
