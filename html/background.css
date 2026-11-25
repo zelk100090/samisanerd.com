@@ -9,7 +9,8 @@ body::before {
   background-repeat: repeat-x;
   animation: scrollInfinite 35s linear infinite;
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
   z-index: -1;
   background-position: center;
 }
