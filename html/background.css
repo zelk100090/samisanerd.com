@@ -5,7 +5,7 @@
 body::before {
   content: "";
   background-image: linear-gradient(90deg, #00ff1577, #0091ff77), url("whooshBg.png");
-  background-size: auto 100vh;
+  background-size: auto 100lvh;
   background-repeat: repeat-x;
   animation: scrollInfinite 35s linear infinite;
   position: fixed;
@@ -15,5 +15,5 @@ body::before {
 }
 @keyframes scrollInfinite {
   0%   { background-position: 0 0, 0 0; }
-  100% { background-position: 0 0, calc(100vh * 1.087962963) 0; }
+  100% { background-position: 0 0, calc(100lvh * 1.087962963) 0; }
 }
