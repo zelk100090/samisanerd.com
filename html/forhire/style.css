@@ -1,3 +1,5 @@
+@media (orientation: landscape){
+
 .formPanel {
     margin: 2vh;
     margin-left: auto;
@@ -84,26 +86,15 @@
     font-size: 2.5vh;
 }
 
-@media (orientation: landscape){
-  .formInput {
-  border: round(2vh, 1px) solid transparent;
-  border-image: url(/input.png) 500 fill / 1 stretch;
-  }
-  .formInputBig {
-  border: round(2vh, 1px) solid transparent;
-  border-image: url(/input.png) 500 fill / 1 stretch;
-  }
+
+.formInput {
+    border: round(2vh, 1px) solid transparent;
+    border-image: url(/input.png) 500 fill / 1 stretch;
 }
 
-@media (orientation: portrait){
-  .formInput {
-  border: round(1vh, 1px) solid transparent;
-  border-image: url(/input.png) 500 fill / 1 stretch;
-  }
-  .formInputBig {
-  border: round(1vh, 1px) solid transparent;
-  border-image: url(/input.png) 500 fill / 1 stretch;
-  }
+.formInputBig {
+    border: round(2vh, 1px) solid transparent;
+    border-image: url(/input.png) 500 fill / 1 stretch;
 }
 
 .formInputBig {
@@ -133,4 +124,153 @@
     margin-top: 2vh;
     font-size: 2vh;
 }
+
+.small {
+    width: 25vw;
+}
+
+.medium {
+    width: 30vw;
+}
+
+}
+
+
+@media (orientation: portrait){
+
+.formPanel {
+    margin: 2vh;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: fit-content;
+    height: auto;
+    align-items: center;
+    text-decoration: none;
+    text-align: center;
+}
+
+.message {
+    width: 95vw;
+}
+
+.formText {
+    text-box: trim-both cap alphabetic;
+    color: white;
+    font-size: 3vh;
+    margin-bottom: 0;
+}
+
+.formInput {
+    color: white;
+    height: 7vh;
+    font-size: 3vh;
+    text-box: trim-both cap alphabetic;
+    margin-bottom: 0;
+    text-align: center;
+    appearance: none;
+    box-sizing: border-box;
+    background: none;
+    transition: scale 0.25s ease;
+    outline: none;
+}
+.formInput:hover {
+    scale: 1.002;
+}
+.formInput:focus {
+    scale: 1.01;
+}
+
+.company {
+    position: absolute; left: -9999px;
+}
+
+.button {
+    width: 35vh;
+    height: 10vh;
+    transition: background-image 0.25s ease;
+    place-items: center;
+    text-align: center;
+    transition: scale 1s ease;
+    container-type: size;
+    text-decoration: none;
+    margin-bottom: 2vh;
+    background: none;
+    display: block;
+    margin-inline: auto;
+    margin-top: 5vh;
+}
+.button:hover {
+    scale: 1.1;
+    animation: shake 1.5s linear infinite;
+}
+@keyframes shake {
+    0%   { rotate: 0deg; }
+    25%  { rotate: 5deg; }
+    75%  { rotate: -5deg;}
+    100% { rotate: 0deg; }
+}
+
+.buttonText {
+    color: white;
+    text-decoration: none;
+    font-size: 7vh;
+    text-align: center;
+    text-box: trim-both cap alphabetic;
+}
+
+.hint {
+    color: white;
+    font-size: 2.5vh;
+}
+
+
+.formInput {
+    border: round(2vh, 1px) solid transparent;
+    border-image: url(/input.png) 500 fill / 1 stretch;
+}
+
+.formInputBig {
+    border: round(2vh, 1px) solid transparent;
+    border-image: url(/input.png) 500 fill / 1 stretch;
+}
+
+.formInputBig {
+    color: white;
+    height: 7vh;
+    font-size: 3vh;
+    text-box: trim-both cap alphabetic;
+    margin-bottom: 0;
+    text-align: center;
+    appearance: none;
+    box-sizing: border-box;
+    background: none;
+    transition: scale 0.25s ease;
+    outline: none;
+    max-width: 90vw;
+}
+.formInputBig:hover {
+    scale: 1.002;
+}
+.formInputBig:focus {
+    scale: 1.01;
+}
+
+.fileUpload{
+    color: white;
+    text-align: center;
+    margin-top: 2vh;
+    font-size: 2vh;
+}
+
+.small {
+    width: 80vw;
+}
+
+.medium {
+    width: 90vw;
+}
+
+}
+
 

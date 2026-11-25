@@ -16,18 +16,32 @@
 <body>
     <!--# set var="Nerd For Hire Help Form" value="Blog" -->
     <!--# include virtual="/header.html" -->
+
+    <div class="desktop">
+<div class="panel navBar">
+    <a href="/"><img src="/logo.png" class="logo"></a>
+    <span class="pageTitle fredoka"><!--# echo var="pageTitle" default="Page Title" --></span>
+</div>
+</div>
+<div class="mobile">
+<div class="panel navBarMobile">
+    <a href="/"><img src="/logo.png" class="logoMobile"></a>
+    <span class="pageTitleMobile fredoka"><!--# echo var="pageTitle" default="Page Title" --></span>
+</div>
+</div>
+
     <form action="/contact" method="POST" id="form">
         <div class="panel formPanel">
             <label for="name" class="fredoka formText">Your Name:</label><br>
-            <input style="width: 25vw" type="text" id="name" name="name" class="formInput fredoka" autocomplete="name" placeholder="First & Last" required>
+            <input type="text" id="name" name="name" class="formInput small fredoka" autocomplete="name" placeholder="First & Last" required>
         </div>
         <div class="panel formPanel">
             <label for="contact" class="fredoka formText">Contact Info:</label><br>
-            <input style="width: 30vw" type="text" id="contact" name="contact" class="formInput fredoka" autocomplete="email" placeholder="Email or Phone Number" required>
+            <input type="text" id="contact" name="contact" class="formInput medium fredoka" autocomplete="email" placeholder="Email or Phone Number" required>
         </div>
         <div class="panel formPanel">
             <label for="address" class="fredoka formText">Town:</label><br>
-            <input style="width: 30vw" type="text" id="address" name="address" class="formInput fredoka" autocomplete="street-address" placeholder="To ensure you're not too far away " required>
+            <input type="text" id="address" name="address" class="formInput medium fredoka" autocomplete="street-address" placeholder="To ensure you're not too far away " required>
         </div>
         <div class="panel formPanel message">
             <label for="description" class="fredoka formText">What can I help you with?</label><br>
